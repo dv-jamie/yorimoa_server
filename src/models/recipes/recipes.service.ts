@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { Recipe } from './entities/recipe.entity';
 
 @Injectable()
 export class RecipesService {
+  constructor(
+    @Inject('RECIPE_REPOSITORY')
+    private recipeRepository: Repository<Recipe>,
+  ) {}
+
   create(createRecipeDto: CreateRecipeDto) {
     return 'This action adds a new recipe';
   }

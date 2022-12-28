@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { CreateDiaryDto } from './dto/create-diary.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
+import { Diary } from './entities/diary.entity';
 
 @Injectable()
 export class DiariesService {
+  constructor(
+    @Inject('DIARY_REPOSITORY')
+    private diaryRepository: Repository<Diary>,
+  ) {}
+
   create(createDiaryDto: CreateDiaryDto) {
     return 'This action adds a new diary';
   }

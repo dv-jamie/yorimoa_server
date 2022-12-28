@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { CreateReplyDto } from './dto/create-reply.dto';
 import { UpdateReplyDto } from './dto/update-reply.dto';
+import { Reply } from './entities/reply.entity';
 
 @Injectable()
 export class RepliesService {
+  constructor(
+    @Inject('REPLY_REPOSITORY')
+    private replyRepository: Repository<Reply>,
+  ) {}
+
   create(createReplyDto: CreateReplyDto) {
     return 'This action adds a new reply';
   }
