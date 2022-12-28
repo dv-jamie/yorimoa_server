@@ -21,6 +21,6 @@ export class Step {
     @Column({ type: 'int' })
     sequence: number
 
-    @ManyToOne(() => Recipe, (recipe) => recipe.ingredients)
+    @ManyToOne(() => Recipe, (recipe) => recipe.steps)
     recipe: Recipe
 }

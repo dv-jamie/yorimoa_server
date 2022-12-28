@@ -3,8 +3,8 @@ import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Ingredient } from "./ingredient.entity";
 import { Reply } from "src/replies/entities/reply.entity";
+import { Step } from "./step.entity";
 
-// 댓글
 @Entity()
 export class Recipe extends BaseEntity {
     @Column({ length: 30 })
@@ -33,6 +33,9 @@ export class Recipe extends BaseEntity {
 
     @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe)
     ingredients: Ingredient[]
+
+    @OneToMany(() => Step, (step) => step.recipe)
+    steps: Step[]
 
     @OneToMany(() => Reply, (reply) => reply)
     replies: Reply[]
