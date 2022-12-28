@@ -6,7 +6,7 @@ import { Diary } from "src/models/diaries/entities/diary.entity";
 
 @Entity()
 export class Reply extends BaseEntity {
-    @Column({ type: 'varchar', length: 10 })
+    @Column('varchar', { length: 10 })
     type: 'DIARY' | 'ASK' | 'REVIEW'
 
     @Column()

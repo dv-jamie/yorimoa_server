@@ -6,13 +6,13 @@ import { Reply } from "src/replies/entities/reply.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
-    @Column({ type: 'text' })
+    @Column('text')
     content: string
 
-    @Column({ type: 'varchar', length: 15 })
+    @Column('varchar', { length: 15 })
     themes: string[]
     
-    @Column({ type: 'varchar' })
+    @Column('varchar')
     images: string[]
 
     @OneToMany(() => Reply, (reply) => reply)

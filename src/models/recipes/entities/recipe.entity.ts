@@ -10,16 +10,16 @@ export class Recipe extends BaseEntity {
     @Column({ length: 30 })
     title: string
 
-    @Column({ type: 'varchar', length: 15 })
+    @Column('varchar', { length: 15 })
     categories: string[]
 
-    @Column({ type: 'varchar', length: 15 })
+    @Column('varchar', { length: 15 })
     themes: string[]
 
-    @Column({ type: 'int' })
+    @Column('int')
     time: number
 
-    @Column({ type: 'int' })
+    @Column('int')
     serving: number
 
     @Column({ length: 5 })
@@ -28,7 +28,7 @@ export class Recipe extends BaseEntity {
     @Column({ length: 100 })
     summary: string
 
-    @Column({ type: 'varchar' })
+    @Column('varchar')
     images: string[]
 
     @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe)

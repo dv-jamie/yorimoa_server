@@ -15,10 +15,10 @@ export class Step {
     @Column()
     tip: string
 
-    @Column({ type: 'varchar' })
+    @Column('varchar')
     images: string[]
 
-    @Column({ type: 'int' })
+    @Column('int')
     sequence: number
 
     @ManyToOne(() => Recipe, (recipe) => recipe.steps)
