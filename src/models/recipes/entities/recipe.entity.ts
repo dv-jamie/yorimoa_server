@@ -1,0 +1,46 @@
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { BaseEntity } from "src/base-entity";
+import { User } from "src/models/users/entities/user.entity";
+import { Ingredient } from "./ingredient.entity";
+import { Reply } from "src/replies/entities/reply.entity";
+
+// 댓글
+@Entity()
+export class Recipe extends BaseEntity {
+    @Column({ length: 30 })
+    title: string
+
+    @Column({ type: 'varchar', length: 15 })
+    categories: string[]
+
+    @Column({ type: 'varchar', length: 15 })
+    themes: string[]
+
+    @Column({ type: 'int' })
+    time: number
+
+    @Column({ type: 'int' })
+    serving: number
+
+    @Column({ length: 5 })
+    level: string
+    
+    @Column({ length: 100 })
+    summary: string
+
+    @Column({ type: 'varchar' })
+    images: string[]
+
+    @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe)
+    ingredients: Ingredient[]
+
+    @OneToMany(() => Reply, (reply) => reply)
+    replies: Reply[]
+
+    @ManyToOne(() => User, (user) => user.recipes)
+    writer: User
+
+    @ManyToMany(() => User, (user) => user.bookmarkRecipes)
+    @JoinTable({ name: 'bookmark_recipe' })
+    bookmarkUsers: User[]
+}
