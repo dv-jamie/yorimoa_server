@@ -1,5 +1,11 @@
-interface ResponseDto {
-    result: 'SUCCESS' | 'FAILED'
-    data: any | null
-    message: string | null
+interface SuccessResponseDto {
+    status: 200
+    data: any
+}
+
+interface ErrorResponseDto {
+    status: number
+    message: string
+    timestamp: string
+    path: string
 }

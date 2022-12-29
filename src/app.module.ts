@@ -8,6 +8,8 @@ import { RecipesModule } from './models/recipes/recipes.module';
 import { UsersModule } from './models/users/users.module';
 import { RepliesModule } from './replies/replies.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_FILTER } from '@nestjs/core';
+import { CatchException } from './exception/catchException';
 
 @Module({
   imports: [
@@ -23,6 +25,12 @@ import { AuthModule } from './auth/auth.module';
     AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: CatchException,
+    }
+  ],
 })
 export class AppModule {}
