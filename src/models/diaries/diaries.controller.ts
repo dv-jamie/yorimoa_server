@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { DiariesService } from './diaries.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
@@ -7,28 +8,42 @@ import { UpdateDiaryDto } from './dto/update-diary.dto';
 export class DiariesController {
   constructor(private readonly diariesService: DiariesService) {}
 
-  @Post()
-  create(@Body() createDiaryDto: CreateDiaryDto) {
-    return this.diariesService.create(createDiaryDto);
-  }
-
   @Get()
   findAll() {
     return this.diariesService.findAll();
   }
 
+  @Get('user/:id')
+  findAllByUser(@Param('id') id: number) {
+    return this.diariesService.findAllByUser(id);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.diariesService.findOne(+id);
+  findOneById(@Param('id') id: number) {
+    return this.diariesService.findOneById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(
+    @Req() req,
+    @Body() createDiaryDto: CreateDiaryDto
+  ) {
+    return this.diariesService.create(req.user.id, createDiaryDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDiaryDto: UpdateDiaryDto) {
-    return this.diariesService.update(+id, updateDiaryDto);
+  updateOne(
+    @Param('id') id: number,
+    @Body() updateDiaryDto: UpdateDiaryDto
+  ) {
+    return this.diariesService.updateOne(id, updateDiaryDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.diariesService.remove(+id);
+  removeOne(@Param('id') id: number) {
+    return this.diariesService.removeOne(id);
   }
 }

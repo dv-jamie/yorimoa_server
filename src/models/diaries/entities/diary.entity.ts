@@ -19,7 +19,7 @@ export class Diary extends BaseEntity {
     @ManyToOne(() => User, (user) => user.diaries)
     writer: User
 
-    @ManyToMany(() => Recipe)
+    @ManyToMany(() => Recipe, (recipe) => recipe.diaries)
     @JoinTable({ name: 'diary_recipe' })
     recipes: Recipe[]
 
