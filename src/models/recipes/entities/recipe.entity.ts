@@ -4,16 +4,14 @@ import { User } from "src/models/users/entities/user.entity";
 import { Ingredient } from "./ingredient.entity";
 import { Reply } from "src/replies/entities/reply.entity";
 import { Step } from "./step.entity";
-import { Theme } from "src/common/entities/theme.entity";
 import { Diary } from "src/models/diaries/entities/diary.entity";
+import { Theme } from "src/models/themes/entities/theme.entity";
+import { Category } from "src/models/categories/entities/category.entity";
 
 @Entity()
 export class Recipe extends BaseEntity {
     @Column({ length: 30 })
     title: string
-
-    @Column('varchar', { length: 15 })
-    categories: string[]
 
     @Column('int')
     time: number
@@ -44,6 +42,10 @@ export class Recipe extends BaseEntity {
 
     @ManyToMany(() => Diary)
     diaries: Diary[]
+    
+    @ManyToMany(() => Category, (category) => category.recipes)
+    @JoinTable({ name: 'category_recipe' })
+    categories: Category[]
     
     @ManyToMany(() => Theme, (theme) => theme.recipes)
     @JoinTable({ name: 'theme_recipe' })

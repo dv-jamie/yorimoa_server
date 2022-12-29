@@ -3,7 +3,7 @@ import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
 import { Reply } from "src/replies/entities/reply.entity";
-import { Theme } from "src/common/entities/theme.entity";
+import { Theme } from "src/models/themes/entities/theme.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
