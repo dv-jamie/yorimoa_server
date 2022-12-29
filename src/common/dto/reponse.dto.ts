@@ -1,10 +1,9 @@
-interface SuccessResponseDto {
-    status: 200
+interface ResponseDto {
+    status: number
     data: any
 }
 
-interface ErrorResponseDto {
-    status: number
+interface ErrorDataDto {
     message: string
     timestamp: string
     path: string

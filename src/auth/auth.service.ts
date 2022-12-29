@@ -17,7 +17,7 @@ export class AuthService {
     return jwtToken;
   }
 
-  async loginKakao(code: string): Promise<SuccessResponseDto> {
+  async loginKakao(code: string): Promise<ResponseDto> {
     const getUserUrl = 'https://kapi.kakao.com/v2/user/me';
     const requestConfig = {
       headers: {

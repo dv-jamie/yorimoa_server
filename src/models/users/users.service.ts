@@ -11,7 +11,7 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto):Promise<SuccessResponseDto> {
+  async create(createUserDto: CreateUserDto):Promise<ResponseDto> {
     const createdUser = await this.userRepository.save(createUserDto)
     return {
       status: 200,
@@ -19,7 +19,7 @@ export class UsersService {
     };
   }
 
-  async findAll():Promise<SuccessResponseDto> {
+  async findAll():Promise<ResponseDto> {
     const users = await this.userRepository.find()
     return {
       status: 200,
@@ -27,7 +27,7 @@ export class UsersService {
     };
   }
 
-  async findOneById(id: number):Promise<SuccessResponseDto> {
+  async findOneById(id: number):Promise<ResponseDto> {
     const user = await this.userRepository.findOneBy({ id })
 
     if(!user) throw new NotFoundException('해당 유저가 존재하지 않습니다.')
@@ -46,7 +46,7 @@ export class UsersService {
   async updateOne(
     id: number,
     UpdateUserDto: UpdateUserDto
-  ):Promise<SuccessResponseDto> {
+  ):Promise<ResponseDto> {
     await this.userRepository.update(id, { ...UpdateUserDto })
     return {
       status: 200,
@@ -54,7 +54,7 @@ export class UsersService {
     };
   }
 
-  async removeOne(id: number):Promise<SuccessResponseDto> {
+  async removeOne(id: number):Promise<ResponseDto> {
     await this.userRepository.delete(id)
     return {
       status: 200,

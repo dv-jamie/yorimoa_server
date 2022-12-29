@@ -27,12 +27,12 @@ import {
         message = '서버 오류입니다.'
       }
   
-      const responseBody:ErrorResponseDto = {
-        status,
+      const data:ErrorDataDto = {
         message,
         timestamp: new Date().toISOString(),
-        path: httpAdapter.getRequestUrl(ctx.getRequest()),
-      };
+        path: httpAdapter.getRequestUrl(ctx.getRequest())
+      }
+      const responseBody:ResponseDto = { status, data }
   
       httpAdapter.reply(ctx.getResponse(), responseBody);
     }
