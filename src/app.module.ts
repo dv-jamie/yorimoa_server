@@ -7,6 +7,7 @@ import { DiariesModule } from './models/diaries/diaries.module';
 import { RecipesModule } from './models/recipes/recipes.module';
 import { UsersModule } from './models/users/users.module';
 import { RepliesModule } from './replies/replies.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { RepliesModule } from './replies/replies.module';
     UsersModule,
     DiariesModule,
     DatabaseModule,
-    RepliesModule
+    RepliesModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

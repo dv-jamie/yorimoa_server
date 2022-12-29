@@ -6,6 +6,12 @@ import { Reply } from "src/replies/entities/reply.entity";
 
 @Entity()
 export class User extends BaseEntity {
+    @Column()
+    loginType: 'KAKAO'
+
+    @Column('bigint')
+    uid: number
+    
     @Column({ length: 15 })
     nick: string
 

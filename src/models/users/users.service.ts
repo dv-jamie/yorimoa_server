@@ -11,23 +11,56 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto):Promise<ResponseDto> {
+    const createdUser = await this.userRepository.save(createUserDto)
+    return {
+      result: 'SUCCESS',
+      data: createdUser,
+      message: null
+    };
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll():Promise<ResponseDto> {
+    const users = await this.userRepository.find()
+    return {
+      result: 'SUCCESS',
+      data: users,
+      message: null
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneById(id: number):Promise<ResponseDto> {
+    const user = await this.userRepository.findOneBy({ id })
+    return {
+      result: 'SUCCESS',
+      data: user,
+      message: null
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneByUid(uid: number) {
+    const user = await this.userRepository.findOneBy({ uid })
+    return user
+  }
+  
+  async updateOne(
+    id: number,
+    UpdateUserDto: UpdateUserDto
+  ):Promise<ResponseDto> {
+    await this.userRepository.update(id, { ...UpdateUserDto })
+    return {
+      result: 'SUCCESS',
+      data: null,
+      message: null
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async removeOne(id: number):Promise<ResponseDto> {
+    await this.userRepository.delete(id)
+    return {
+      result: 'SUCCESS',
+      data: null,
+      message: null
+    };
   }
 }
