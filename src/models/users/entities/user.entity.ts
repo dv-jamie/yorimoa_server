@@ -6,7 +6,7 @@ import { Reply } from "src/replies/entities/reply.entity";
 
 @Entity()
 export class User extends BaseEntity {
-    @Column()
+    @Column({ length: 10 })
     loginType: 'KAKAO'
 
     @Column('bigint')
