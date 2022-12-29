@@ -17,12 +17,7 @@ export class AuthService {
     return jwtToken;
   }
 
-  async login(user: User) {
-    const jwtToken = this.getJwtToken(user)
-    return jwtToken
-  }
-
-  async getKakaoInfo(code: string) {
+  async loginKakao(code: string): Promise<ResponseDto> {
     const getUserUrl = 'https://kapi.kakao.com/v2/user/me';
     const requestConfig = {
       headers: {
@@ -30,8 +25,20 @@ export class AuthService {
       },
     };
     const { data } = await axios.get(getUserUrl, requestConfig)
-    console.log(data.id)
     const user = await this.usersService.findOneByUid(data.id)
-    return user
+    const jwtToken = this.getJwtToken(user)
+    const result:ResponseDto = user
+      ? {
+        result: 'SUCCESS',
+        data: { jwtToken, userId: user.id },
+        message: null
+      }
+      : {
+        result: 'FAILED',
+        data: null,
+        message: '회원 정보가 존재하지 않습니다.  '
+      }
+      
+    return result
   }
 }
