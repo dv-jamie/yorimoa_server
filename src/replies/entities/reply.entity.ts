@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
@@ -29,12 +29,4 @@ export class Reply extends BaseEntity {
     
     @ManyToOne(() => Recipe, (recipe) => recipe.replies)
     recipe: Recipe
-
-    @ManyToMany(() => Recipe)
-    @JoinTable({ name: 'diary_recipe' })
-    recipes: Recipe[]
-
-    @ManyToMany(() => User, (user) => user.bookmarkDiaries)
-    @JoinTable({ name: 'bookmark_diary' })
-    bookmarkUsers: User[]
 }
