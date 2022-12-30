@@ -3,6 +3,6 @@ import { Diary } from "../entities/diary.entity";
 
 export class CreateDiaryDto extends PickType(Diary, [
     'content',
+    'images',
     'themes',
-    'images'
 ] as const) {}

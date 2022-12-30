@@ -1,4 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { IsString } from 'class-validator';
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
@@ -7,11 +8,13 @@ import { Theme } from "src/models/themes/entities/theme.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
+    @IsString()
     @Column('text')
     content: string
     
+    @IsString()
     @Column('varchar')
-    images: string[]
+    images: string
 
     @OneToMany(() => Reply, (reply) => reply)
     replies: Reply[]
@@ -24,7 +27,7 @@ export class Diary extends BaseEntity {
     recipes: Recipe[]
 
     @ManyToMany(() => Theme, (theme) => theme.recipes)
-    @JoinTable({ name: 'theme_recipe' })
+    @JoinTable({ name: 'theme_diary' })
     themes: Theme[]
 
     @ManyToMany(() => User, (user) => user.bookmarkDiaries)

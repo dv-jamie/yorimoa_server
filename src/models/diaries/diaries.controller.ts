@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Query } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { DiariesService } from './diaries.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
+import { GetDiariesDto } from './dto/get-diaries.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 
 @Controller('diaries')
@@ -9,13 +10,18 @@ export class DiariesController {
   constructor(private readonly diariesService: DiariesService) {}
 
   @Get()
-  findAll() {
-    return this.diariesService.findAll();
+  findAll(
+    @Query() getDiariesDto: GetDiariesDto,
+  ) {
+    return this.diariesService.findAll(getDiariesDto);
   }
 
   @Get('user/:id')
-  findAllByUser(@Param('id') id: number) {
-    return this.diariesService.findAllByUser(id);
+  findAllByUser(
+    @Param('id') id: number,
+    @Query() getDiariesDto: GetDiariesDto,
+  ) {
+    return this.diariesService.findAllByUser(id, getDiariesDto);
   }
 
   @Get(':id')
