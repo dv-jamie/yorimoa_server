@@ -7,6 +7,7 @@ import { Step } from "./step.entity";
 import { Diary } from "src/models/diaries/entities/diary.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
 import { Category } from "src/models/categories/entities/category.entity";
+import { Image } from "src/models/images/entities/image.entity";
 
 @Entity()
 export class Recipe extends BaseEntity {
@@ -25,8 +26,8 @@ export class Recipe extends BaseEntity {
     @Column({ length: 100 })
     summary: string
 
-    @Column('varchar')
-    images: string[]
+    @OneToMany(() => Image, (image) => image.recipe)
+    images: Image[]
 
     @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe)
     ingredients: Ingredient[]

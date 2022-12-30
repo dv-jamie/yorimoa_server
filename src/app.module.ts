@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { CatchException } from './exception/catchException';
 import { ThemesModule } from './models/themes/themes.module';
+import { ImagesModule } from './models/images/images.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ThemesModule } from './models/themes/themes.module';
     DatabaseModule,
     RepliesModule,
     AuthModule,
-    ThemesModule
+    ThemesModule,
+    ImagesModule
   ],
   controllers: [AppController],
   providers: [

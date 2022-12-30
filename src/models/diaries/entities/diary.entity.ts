@@ -5,16 +5,16 @@ import { User } from "src/models/users/entities/user.entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
 import { Reply } from "src/replies/entities/reply.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
+import { Image } from "src/models/images/entities/image.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
     @IsString()
     @Column('text')
     content: string
-    
-    @IsString()
-    @Column('varchar')
-    images: string
+
+    @OneToMany(() => Image, (image) => image.diary)
+    images: Image[]
 
     @OneToMany(() => Reply, (reply) => reply)
     replies: Reply[]

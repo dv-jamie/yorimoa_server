@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Image } from "src/models/images/entities/image.entity";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Recipe } from "./recipe.entity";
 
 @Entity()
@@ -15,11 +16,11 @@ export class Step {
     @Column()
     tip: string
 
-    @Column('varchar')
-    images: string[]
-
     @Column('int')
     sequence: number
+
+    @OneToMany(() => Image, (image) => image.step)
+    images: Image[]
 
     @ManyToOne(() => Recipe, (recipe) => recipe.steps)
     recipe: Recipe
