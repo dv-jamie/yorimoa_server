@@ -12,17 +12,17 @@ import {
     constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
   
     catch(exception: unknown, host: ArgumentsHost): void {
+      console.log(exception)
+      
       const { httpAdapter } = this.httpAdapterHost;
       const ctx = host.switchToHttp();
 
       let status: number
-      let message: string
+      let message: any
       if(exception instanceof HttpException) {
         status = exception.getStatus()
         message = exception.message
       } else {
-        console.log(exception)
-        
         status = HttpStatus.INTERNAL_SERVER_ERROR
         message = '서버 오류입니다.'
       }
