@@ -5,8 +5,4 @@ import { ImagesService } from './images.service';
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.imagesService.findOne(id);
-  }
 }

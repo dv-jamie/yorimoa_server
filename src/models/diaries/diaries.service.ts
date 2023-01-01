@@ -1,5 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { Image } from '../images/entities/image.entity';
+import { ImagesService } from '../images/images.service';
+import { Theme } from '../themes/entities/theme.entity';
+import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
 import { GetDiariesDto } from './dto/get-diaries.dto';
@@ -11,7 +15,9 @@ export class DiariesService {
   constructor(
     @Inject('DIARY_REPOSITORY')
     private diaryRepository: Repository<Diary>,
-    private userService: UsersService
+    private usersService: UsersService,
+    private imagesService: ImagesService,
+    private themesService: ThemesService
   ) {}
 
   async findAll(getDiariesDto: GetDiariesDto):Promise<ResponseDto> {
@@ -21,7 +27,6 @@ export class DiariesService {
       .select([
         'diary.id',
         'diary.content',
-        'diary.images',
         'diary.createdAt',
         'writer.id',
         'writer.nick',
@@ -33,9 +38,12 @@ export class DiariesService {
         'recipe.level',
         'theme.id',
         'theme.name',
+        'image.id',
+        'image.url',
       ])
       .leftJoin('diary.writer', 'writer')
       .leftJoin('diary.themes', 'theme')
+      .leftJoin('diary.images', 'image')
       .take(size)
       .skip(page)
 
@@ -59,14 +67,13 @@ export class DiariesService {
     id: number,
     getDiariesDto: GetDiariesDto
   ):Promise<ResponseDto> {
-    await this.userService.findOneById(id)
+    await this.usersService.findOneById(id)
     const { themeIds, onlyRecipesLinked, page, size } = getDiariesDto
     const query = this.diaryRepository
       .createQueryBuilder('diary')
       .select([
         'diary.id',
         'diary.content',
-        'diary.images',
         'diary.createdAt',
         'writer.id',
         'writer.nick',
@@ -78,9 +85,12 @@ export class DiariesService {
         'recipe.level',
         'theme.id',
         'theme.name',
+        'image.id',
+        'image.url',
       ])
       .leftJoin('diary.writer', 'writer')
       .leftJoin('diary.themes', 'theme')
+      .leftJoin('diary.images', 'image')
       .take(size)
       .skip(page)
 
@@ -108,21 +118,23 @@ export class DiariesService {
       .select([
         'diary.id',
         'diary.content',
-        'diary.images',
         'diary.createdAt',
         'writer.id',
         'writer.nick',
         'writer.image',
+        'theme.id',
+        'theme.name',
+        'image.id',
+        'image.url',
         'recipe.id',
         'recipe.title',
         'recipe.time',
         'recipe.serving',
         'recipe.level',
-        'theme.id',
-        'theme.name',
       ])
       .leftJoin('diary.writer', 'writer')
       .leftJoin('diary.themes', 'theme')
+      .leftJoin('diary.images', 'image')
       .leftJoin('diary.recipes', 'recipe')
       .where('diary.id = :id', { id })
       .getOne()
@@ -139,16 +151,33 @@ export class DiariesService {
     reqId: number,
     createDiaryDto: CreateDiaryDto
   ):Promise<ResponseDto> {
-    const findWriter = await this.userService.findOneById(reqId)
+    const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
-    const createdDiairy = await this.diaryRepository.save({
-      ...createDiaryDto,
-      writer
-    })
+    const { content, themeIds, imageUrls, recipes } = createDiaryDto
+    
+    if(themeIds.length === 0 && imageUrls.length === 0) {
+      throw new BadRequestException('테마와 이미지는 필수값입니다.')
+    }
+
+    const themes:Theme[] = []
+    for(const id of themeIds) {
+      const theme = await this.themesService.findOneById(id)
+      themes.push(theme)
+    }
+
+    const newDiary = { content, writer, themes, recipes }
+    const createdDiary = await this.diaryRepository.save(newDiary)
+
+    for(const url of imageUrls) {
+      const newImage = new Image 
+      newImage.url = url
+      newImage.diary = createdDiary
+      await this.imagesService.create(newImage)
+    }
 
     return {
       status: 200,
-      data: createdDiairy
+      data: createdDiary
     };
   }
 

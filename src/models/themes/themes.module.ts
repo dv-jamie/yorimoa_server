@@ -10,6 +10,7 @@ import { DatabaseModule } from 'src/database/database.module';
   providers: [
     ...themesProviders,
     ThemesService
-  ]
+  ],
+  exports: [ThemesService]
 })
 export class ThemesModule {}
