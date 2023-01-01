@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Theme } from './entities/theme.entity';
 
@@ -12,5 +12,13 @@ export class ThemesService {
   async findAll() {
     const themes = await this.themeRepository.find()
     return themes;
+  }
+
+  async findOneById(id: number) {
+    const theme = await this.themeRepository.findOneBy({id})
+
+    if(!theme) throw new NotFoundException('해당 테마가 존재하지 않습니다.')
+    
+    return theme
   }
 }
