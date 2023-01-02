@@ -1,4 +1,5 @@
 import { PickType } from "@nestjs/mapped-types";
+import { IsNumber, IsString } from "class-validator";
 import { Recipe } from "../entities/recipe.entity";
 
 export class CreateRecipeDto extends PickType(Recipe, [
@@ -7,9 +8,15 @@ export class CreateRecipeDto extends PickType(Recipe, [
     'serving',
     'level',
     'summary',
-    'images',
     'ingredients',
     'steps',
-    'categories',
-    'themes',
-] as const) {}
+] as const) {
+    @IsNumber({}, { each: true })
+    categoryIds: number[]
+
+    @IsNumber({}, { each: true })
+    themeIds: number[]
+
+    @IsString({ each: true })
+    imageUrls: string[]
+}

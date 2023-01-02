@@ -14,6 +14,7 @@ import { UsersModule } from '../users/users.module';
   providers: [
     ...recipesProviders,
     RecipesService
-  ]
+  ],
+  exports: [RecipesService]
 })
 export class RecipesModule {}

@@ -6,6 +6,7 @@ import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from '../users/users.module';
 import { ImagesModule } from '../images/images.module';
 import { ThemesModule } from '../themes/themes.module';
+import { RecipesModule } from '../recipes/recipes.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ThemesModule } from '../themes/themes.module';
     UsersModule,
     ImagesModule,
     ThemesModule,
+    RecipesModule,
   ],
   controllers: [DiariesController],
   providers: [

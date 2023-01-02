@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
@@ -130,12 +130,16 @@ export class RecipesService {
     };
   }
 
-  async removeOne(id: number):Promise<ResponseDto> {
+  async deleteOne(id: number):Promise<ResponseDto> {
     const result = await this.recipeRepository.delete(id)
     
     return {
       status: 200,
       data: result
     };
+  }
+
+  async deleteMany(ids: number[]):Promise<void> {
+    await this.recipeRepository.delete({ id: In(ids) })
   }
 }
