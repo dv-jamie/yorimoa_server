@@ -3,9 +3,9 @@ import { IsString, IsObject } from 'class-validator';
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
-import { Reply } from "src/replies/entities/reply.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
 import { Image } from "src/models/images/entities/image.entity";
+import { Reply } from "src/models/replies/entities/reply.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
