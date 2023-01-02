@@ -1,4 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { IsNumber, IsString } from "class-validator";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Ingredient } from "./ingredient.entity";
@@ -11,18 +12,23 @@ import { Image } from "src/models/images/entities/image.entity";
 
 @Entity()
 export class Recipe extends BaseEntity {
+    @IsString()
     @Column({ length: 30 })
     title: string
 
+    @IsNumber()
     @Column('int')
     time: number
 
+    @IsNumber()
     @Column('int')
     serving: number
 
+    @IsString()
     @Column({ length: 5 })
     level: string
     
+    @IsString()
     @Column({ length: 100 })
     summary: string
 
