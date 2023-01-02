@@ -13,4 +13,15 @@ export class ImagesService {
     const createdImages = await this.imageRepository.save(image)
     return createdImages
   }
+
+  async deleteAllByType(type: 'diary' | 'recipe' | 'step', id: number) {
+    const result = await this.imageRepository
+    .createQueryBuilder('image')
+    .delete()
+    .from(Image)
+    .where(`${type} = :id`, { id })
+    .execute()
+
+    return result
+  }
 }

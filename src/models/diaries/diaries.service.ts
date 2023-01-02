@@ -185,22 +185,53 @@ export class DiariesService {
     id: number,
     updateDiaryDto: UpdateDiaryDto
   ):Promise<ResponseDto> {
-    const result = await this.diaryRepository.update(id, {
-      ...updateDiaryDto
-    })
+    const { content, themeIds, imageUrls, recipes } = updateDiaryDto
+    const findDiary = await this.findOneById(id)
+    const diary = findDiary.data
+    
+    if(content) {
+      diary.content = content
+      console.log(diary)
+    }
+    
+    if(themeIds) {
+      const themes:Theme[] = []
+      for(const id of themeIds) {
+        const theme = await this.themesService.findOneById(id)
+        themes.push(theme)
+      }
+      diary.themes = themes
+    }
+
+    if(recipes) {
+      diary.recipes = recipes
+    }
+
+    await this.diaryRepository.save(diary)
+
+    if(imageUrls) {
+      await this.imagesService.deleteAllByType('diary', id)
+
+      for(const url of imageUrls) {
+        const newImage = new Image 
+        newImage.url = url
+        newImage.diary = diary
+        await this.imagesService.create(newImage)
+      }
+    }
     
     return {
       status: 200,
-      data: result
+      data: 'SUCCESS'
     };
   }
 
   async removeOne(id: number):Promise<ResponseDto> {
-    const result = await this.diaryRepository.delete(id)
+    await this.diaryRepository.delete(id)
     
     return {
       status: 200,
-      data: result
+      data: 'SUCCESS'
     };
   }
 }
