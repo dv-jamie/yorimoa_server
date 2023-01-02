@@ -6,7 +6,6 @@ import { Recipe } from "src/models/recipes/entities/recipe.entity";
 import { Reply } from "src/replies/entities/reply.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
 import { Image } from "src/models/images/entities/image.entity";
-import { isObject } from "util";
 
 @Entity()
 export class Diary extends BaseEntity {
@@ -20,7 +19,9 @@ export class Diary extends BaseEntity {
     @OneToMany(() => Reply, (reply) => reply)
     replies: Reply[]
     
-    @ManyToOne(() => User, (user) => user.diaries)
+    @ManyToOne(() => User, (user) => user.diaries, {
+        onDelete: 'CASCADE'
+    })
     writer: User
 
     @IsObject({ each: true })
