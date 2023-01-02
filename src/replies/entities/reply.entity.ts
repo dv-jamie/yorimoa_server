@@ -21,12 +21,18 @@ export class Reply extends BaseEntity {
     @OneToMany(() => Reply, (reply) => reply.id)
     parent: Reply
 
-    @ManyToOne(() => User, (user) => user.replies)
+    @ManyToOne(() => User, (user) => user.replies, {
+        onDelete: 'SET NULL'
+    })
     writer: User
     
-    @ManyToOne(() => Diary, (diary) => diary.replies)
+    @ManyToOne(() => Diary, (diary) => diary.replies, {
+        onDelete: 'CASCADE'
+    })
     diary: Diary
     
-    @ManyToOne(() => Recipe, (recipe) => recipe.replies)
+    @ManyToOne(() => Recipe, (recipe) => recipe.replies, {
+        onDelete: 'CASCADE'
+    })
     recipe: Recipe
 }
