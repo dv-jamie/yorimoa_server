@@ -6,12 +6,12 @@ import { DatabaseModule } from './database/database.module';
 import { DiariesModule } from './models/diaries/diaries.module';
 import { RecipesModule } from './models/recipes/recipes.module';
 import { UsersModule } from './models/users/users.module';
-import { RepliesModule } from './replies/replies.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { CatchException } from './exception/catchException';
 import { ThemesModule } from './models/themes/themes.module';
 import { ImagesModule } from './models/images/images.module';
+import { RepliesModule } from './models/replies/replies.module';
 
 @Module({
   imports: [
