@@ -13,12 +13,18 @@ export class Image {
     @Column()
     url: string
     
-    @ManyToOne(() => Recipe, (recipe) => recipe.images)
+    @ManyToOne(() => Recipe, (recipe) => recipe.images, {
+        onDelete: 'CASCADE'
+    })
     recipe: Recipe
     
-    @ManyToOne(() => Step, (step) => step.images)
+    @ManyToOne(() => Step, (step) => step.images, {
+        onDelete: 'CASCADE'
+    })
     step: Step
     
-    @ManyToOne(() => Diary, (diary) => diary.images)
+    @ManyToOne(() => Diary, (diary) => diary.images, {
+        onDelete: 'CASCADE'
+    })
     diary: Diary
 }
