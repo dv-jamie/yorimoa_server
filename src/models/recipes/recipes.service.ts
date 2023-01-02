@@ -86,26 +86,18 @@ export class RecipesService {
         'recipe.serving',
         'recipe.level',
         'recipe.summary',
-        'recipe.images',
         'recipe.createdAt',
-        'writer.id',
-        'writer.nick',
-        'writer.image',
-        'recipe.id',
-        'recipe.id',
-        'recipe.title',
-        'recipe.time',
-        'recipe.serving',
-        'recipe.level',
+        'image.id',
+        'image.url',
+        'category.id',
+        'category.name',
         'theme.id',
         'theme.name',
-      ])
-      .leftJoinAndSelect('recipe.ingredients', 'ingredient')
-      .leftJoinAndSelect('recipe.steps', 'step')
-      .leftJoin('recipe.writer', 'writer')
-      .leftJoin('recipe.diaries', 'diary')
+      ]) 
+      .leftJoin('recipe.images', 'image')
       .leftJoin('recipe.categories', 'category')
       .leftJoin('recipe.themes', 'theme')
+      .leftJoin('recipe.writer', 'writer')
       .where('writer.id = :id', { id })
       .getMany()
 
