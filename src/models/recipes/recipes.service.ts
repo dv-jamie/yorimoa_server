@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, In } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
+import { GetRecipesDto } from './dto/get-recipes.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { Recipe } from './entities/recipe.entity';
 
@@ -13,8 +14,20 @@ export class RecipesService {
     private userService: UsersService
   ) {}
 
-  async findAll():Promise<ResponseDto> {
-    const recipes = await this.recipeRepository
+  async findAll(getRecipesDto: GetRecipesDto):Promise<ResponseDto> {
+    const {
+      minServing,
+      maxServing,
+      minTime,
+      maxTime,
+      minLevel,
+      maxLevel,
+      categoryIds,
+      themeIds,
+      page,
+      size
+    } = getRecipesDto
+    const query = this.recipeRepository
       .createQueryBuilder('recipe')
       .select([
         'recipe.id',
@@ -24,29 +37,38 @@ export class RecipesService {
         'recipe.level',
         'recipe.summary',
         'recipe.createdAt',
-        'recipeImage.id',
-        'recipeImage.url',
-        'writer.id',
-        'writer.nick',
-        'writer.image',
-        'diary.id',
-        'diaryImage.id',
-        'diaryImage.url',
+        'image.id',
+        'image.url',
         'category.id',
         'category.name',
         'theme.id',
         'theme.name',
-      ])
-      .leftJoin('recipe.images', 'recipeImage')
-      .leftJoinAndSelect('recipe.ingredients', 'ingredient')
-      .leftJoin('recipe.steps', 'step')
-      .leftJoin('step.images', 'stepImage')
-      .leftJoin('recipe.writer', 'writer')
-      .leftJoin('recipe.diaries', 'diary')
-      .leftJoin('diary.images', 'diaryImage')
+      ]) 
+      .leftJoin('recipe.images', 'image')
       .leftJoin('recipe.categories', 'category')
       .leftJoin('recipe.themes', 'theme')
-      .getMany()
+      .where(`recipe.serving BETWEEN :minServing AND :maxServing`, {
+        minServing, maxServing
+      })
+      .andWhere(`recipe.level BETWEEN :minLevel AND :maxLevel`, {
+        minLevel, maxLevel
+      })
+      .take(size)
+      .skip(page)
+
+    if(maxTime) {
+      query.andWhere(`recipe.time BETWEEN :minTime AND :maxTime`, {
+        minTime, maxTime
+      })
+    }
+    if(themeIds.length !== 0) {
+      query.andWhere('theme.id IN (:themeIds)', { themeIds })
+    }
+    if(categoryIds.length !== 0) {
+      query.andWhere('theme.id IN (:categoryIds)', { categoryIds })
+    }
+
+    const recipes = await query.getMany()
 
     return {
       status: 200,

@@ -1,16 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { GetRecipesDto } from './dto/get-recipes.dto';
 
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
 
   @Get()
-  findAll() {
-    return this.recipesService.findAll();
+  findAll(
+    @Query() getRecipesDto: GetRecipesDto,
+  ) {
+    return this.recipesService.findAll(getRecipesDto);
   }
 
   @Get('user/:id')
