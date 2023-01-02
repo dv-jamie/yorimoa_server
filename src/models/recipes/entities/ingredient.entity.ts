@@ -16,7 +16,7 @@ export class Ingredient {
     amount: string
 
     @Column()
-    sequence: number
+    group: number
 
     @ManyToOne(() => Recipe, (recipe) => recipe.ingredients)
     recipe: Recipe
