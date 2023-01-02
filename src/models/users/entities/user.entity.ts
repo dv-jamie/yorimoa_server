@@ -2,7 +2,7 @@ import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { BaseEntity } from "src/base-entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
 import { Diary } from "src/models/diaries/entities/diary.entity";
-import { Reply } from "src/replies/entities/reply.entity";
+import { Reply } from "src/models/replies/entities/reply.entity";
 
 @Entity()
 export class User extends BaseEntity {

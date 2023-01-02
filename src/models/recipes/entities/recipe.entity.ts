@@ -3,12 +3,12 @@ import { IsNumber, IsString } from "class-validator";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Ingredient } from "./ingredient.entity";
-import { Reply } from "src/replies/entities/reply.entity";
 import { Step } from "./step.entity";
 import { Diary } from "src/models/diaries/entities/diary.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
 import { Category } from "src/models/categories/entities/category.entity";
 import { Image } from "src/models/images/entities/image.entity";
+import { Reply } from "src/models/replies/entities/reply.entity";
 
 @Entity()
 export class Recipe extends BaseEntity {

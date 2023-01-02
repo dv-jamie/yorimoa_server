@@ -23,22 +23,27 @@ export class RecipesService {
         'recipe.serving',
         'recipe.level',
         'recipe.summary',
-        'recipe.images',
         'recipe.createdAt',
+        'recipeImage.id',
+        'recipeImage.url',
         'writer.id',
         'writer.nick',
         'writer.image',
         'diary.id',
-        'diary.images',
+        'diaryImage.id',
+        'diaryImage.url',
         'category.id',
         'category.name',
         'theme.id',
         'theme.name',
       ])
+      .leftJoin('recipe.images', 'recipeImage')
       .leftJoinAndSelect('recipe.ingredients', 'ingredient')
-      .leftJoinAndSelect('recipe.steps', 'step')
+      .leftJoin('recipe.steps', 'step')
+      .leftJoin('step.images', 'stepImage')
       .leftJoin('recipe.writer', 'writer')
       .leftJoin('recipe.diaries', 'diary')
+      .leftJoin('diary.images', 'diaryImage')
       .leftJoin('recipe.categories', 'category')
       .leftJoin('recipe.themes', 'theme')
       .getMany()
