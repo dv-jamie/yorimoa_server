@@ -8,13 +8,12 @@ import { UsersModule } from '../users/users.module';
 @Module({
   imports: [
     DatabaseModule,
-    UsersModule
+    UsersModule,
   ],
   controllers: [RecipesController],
   providers: [
     ...recipesProviders,
     RecipesService
-  ],
-  exports: [RecipesService]
+  ]
 })
 export class RecipesModule {}

@@ -13,15 +13,20 @@ export class Step {
     @Column()
     comment: string
 
-    @Column()
-    tip: string
+    @Column({ nullable: true })
+    tip: string | null
 
+    @Column()
+    group: number
+    
     @Column('int')
     sequence: number
 
     @OneToMany(() => Image, (image) => image.step)
     images: Image[]
 
-    @ManyToOne(() => Recipe, (recipe) => recipe.steps)
+    @ManyToOne(() => Recipe, (recipe) => recipe.steps, {
+        onDelete: 'CASCADE'
+    })
     recipe: Recipe
 }

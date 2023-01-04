@@ -12,6 +12,8 @@ export class Theme {
     @Column()
     sequence: number
 
-    @ManyToMany(() => Recipe, (recipe) => recipe.themes)
+    @ManyToMany(() => Recipe, (recipe) => recipe.themes,{
+        onDelete: 'CASCADE'
+    })
     recipes: Recipe[]
 }

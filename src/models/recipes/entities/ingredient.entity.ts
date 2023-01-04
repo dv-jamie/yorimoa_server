@@ -18,6 +18,8 @@ export class Ingredient {
     @Column()
     group: number
 
-    @ManyToOne(() => Recipe, (recipe) => recipe.ingredients)
+    @ManyToOne(() => Recipe, (recipe) => recipe.ingredients, {
+        onDelete: 'CASCADE'
+    })
     recipe: Recipe
 }

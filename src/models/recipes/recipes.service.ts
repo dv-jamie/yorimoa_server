@@ -1,17 +1,21 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { GetRecipesDto } from './dto/get-recipes.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { Ingredient } from './entities/ingredient.entity';
 import { Recipe } from './entities/recipe.entity';
+import { Step } from './entities/step.entity';
+import { IngredientExceptGroup, IngredientGroup } from './interfaces/ingredient.interface';
+import { StepExceptGroup, StepGroup } from './interfaces/step.interface';
 
 @Injectable()
 export class RecipesService {
   constructor(
     @Inject('RECIPE_REPOSITORY')
     private recipeRepository: Repository<Recipe>,
-    private userService: UsersService
+    private userService: UsersService,
   ) {}
 
   async findAll(getRecipesDto: GetRecipesDto):Promise<ResponseDto> {
@@ -108,9 +112,95 @@ export class RecipesService {
   }
 
   async findOneById(id: number):Promise<ResponseDto> {
-    const recipe = await this.recipeRepository.findOneBy({ id })
-
+    const recipe = await this.recipeRepository
+      .createQueryBuilder('recipe')
+      .select([
+        'recipe.id',
+        'recipe.title',
+        'recipe.time',
+        'recipe.serving',
+        'recipe.level',
+        'recipe.summary',
+        'recipe.createdAt',
+        'writer.id',
+        'writer.nick',
+        'writer.image',
+        'diary.id',
+        'diary.content',
+      ]) 
+      .leftJoin('recipe.writer', 'writer')
+      .leftJoin('recipe.diaries', 'diary')
+      .leftJoinAndSelect('diary.images', 'diaryImage')
+      .leftJoinAndSelect('recipe.images', 'recipeImage')
+      .leftJoinAndSelect('recipe.categories', 'category')
+      .leftJoinAndSelect('recipe.themes', 'theme')
+      .leftJoinAndSelect('recipe.ingredients', 'ingredient')
+      .leftJoinAndSelect('recipe.steps', 'step')
+      .leftJoinAndSelect('step.images', 'stepImage')
+      .where('recipe.id = :id', { id })
+      .getOne()
+    
     if(!recipe) throw new NotFoundException('해당 레시피를 찾을 수 없습니다.')
+
+    const ingredientGroups = []
+    const stepGroups = []
+    const generateIngredientGroup = (ingredient: Ingredient) => {
+      const ingredientGroup:IngredientGroup = {
+        group: ingredient.group,
+        division: ingredient.division,
+        indigredients: [{
+          name: ingredient.name,
+          amount: ingredient.amount
+        }]
+      }
+      return ingredientGroup
+    }
+    const generateStepGroup = (step: Step) => {
+      const stepGroup:StepGroup = {
+        group: step.group,
+        division: step.division,
+        steps: [{
+          comment: step.comment,
+          tip: step.tip,
+          images: step.images
+        }]
+      }
+      return stepGroup
+    }
+
+    let curIngredientNumber = 0
+    let curStepNumber = 0
+    recipe.ingredients.forEach(ingredient => {
+      if(ingredient.group !== curIngredientNumber) {
+        const ingredientGroup = generateIngredientGroup(ingredient)
+        ingredientGroups.push(ingredientGroup)
+        curIngredientNumber++
+      } else {
+        const ingredientExceptGroup:IngredientExceptGroup = {
+          name: ingredient.name,
+          amount: ingredient.amount
+        }
+        ingredientGroups[curIngredientNumber - 1].indigredients
+          .push(ingredientExceptGroup)
+      }
+    })
+    recipe.steps.forEach(step => {
+      if(step.group !== curStepNumber) {
+        const stepGroup = generateStepGroup(step)
+        stepGroups.push(stepGroup)
+        curStepNumber++
+      } else {
+        const stepExceptGroup:StepExceptGroup = {
+          comment: step.comment,
+          tip: step.tip,
+          images: step.images
+        }
+        stepGroups[curStepNumber - 1].steps
+          .push(stepExceptGroup)
+      }
+    })
+    recipe.ingredients = ingredientGroups
+    recipe.steps = stepGroups
 
     return {
       status: 200,
@@ -150,15 +240,19 @@ export class RecipesService {
   }
 
   async deleteOne(id: number):Promise<ResponseDto> {
-    const result = await this.recipeRepository.delete(id)
-    
+    const findRecipe = await this.findOneById(id)
+    const recipe = findRecipe.data
+
+    if(recipe.diaries.length !== 0) {
+      recipe.diaries = []
+      await this.recipeRepository.save(recipe)
+    }
+
+    await this.recipeRepository.delete(id)
+
     return {
       status: 200,
-      data: result
+      data: 'SUCCESS'
     };
-  }
-
-  async deleteMany(ids: number[]):Promise<void> {
-    await this.recipeRepository.delete({ id: In(ids) })
   }
 }

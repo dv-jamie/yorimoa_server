@@ -2,7 +2,6 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import { Repository } from 'typeorm';
 import { Image } from '../images/entities/image.entity';
 import { ImagesService } from '../images/images.service';
-import { RecipesService } from '../recipes/recipes.service';
 import { Theme } from '../themes/entities/theme.entity';
 import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
@@ -19,7 +18,6 @@ export class DiariesService {
     private usersService: UsersService,
     private imagesService: ImagesService,
     private themesService: ThemesService,
-    private recipesService: RecipesService
   ) {}
 
   async findAll(getDiariesDto: GetDiariesDto):Promise<ResponseDto> {
@@ -193,7 +191,6 @@ export class DiariesService {
     
     if(content) {
       diary.content = content
-      console.log(diary)
     }
     
     if(themeIds) {
@@ -228,14 +225,17 @@ export class DiariesService {
     };
   }
 
-  async deleteOneWithRecipes(diaryId: number, recipeIds: number[]):Promise<ResponseDto> {
+  async deleteOneWithRecipes(
+    diaryId: number,
+    recipeIds: number[]
+  ):Promise<ResponseDto> {
     const diary = await this.diaryRepository.findOneBy({ id: diaryId })
 
     if(!diary) throw new NotFoundException('이미 삭제된 일기입니다.')
-
-    if(recipeIds.length !== 0) {
-      await this.recipesService.deleteMany(recipeIds)
-    }
+    
+    // if(recipeIds.length !== 0) {
+    //   await this.recipesService.deleteMany(recipeIds)
+    // }
 
     await this.diaryRepository.delete(diaryId)
 

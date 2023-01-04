@@ -56,14 +56,14 @@ export class Recipe extends BaseEntity {
     diaries: Diary[]
     
     @ManyToMany(() => Category, (category) => category.recipes)
-    @JoinTable({ name: 'category_recipe' })
+    @JoinTable({ name: 'recipe_category' })
     categories: Category[]
     
     @ManyToMany(() => Theme, (theme) => theme.recipes)
-    @JoinTable({ name: 'theme_recipe' })
+    @JoinTable({ name: 'recipe_theme' })
     themes: Theme[]
 
     @ManyToMany(() => User, (user) => user.bookmarkRecipes)
-    @JoinTable({ name: 'bookmark_recipe' })
+    @JoinTable({ name: 'recipe_bookmark' })
     bookmarkUsers: User[]
 }
