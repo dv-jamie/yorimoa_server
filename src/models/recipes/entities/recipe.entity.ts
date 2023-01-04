@@ -27,7 +27,7 @@ export class Recipe extends BaseEntity {
     @Max(20)
     serving: number
 
-    @IsString()
+    @IsNumber()
     @Column()
     @Min(1)
     @Max(4)
@@ -49,7 +49,9 @@ export class Recipe extends BaseEntity {
     @OneToMany(() => Reply, (reply) => reply)
     replies: Reply[]
 
-    @ManyToOne(() => User, (user) => user.recipes)
+    @ManyToOne(() => User, (user) => user.recipes, {
+        onDelete: 'CASCADE'
+    })
     writer: User
 
     @ManyToMany(() => Diary, (diary) => diary.recipes)
