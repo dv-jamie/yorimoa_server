@@ -9,9 +9,17 @@ export class ImagesService {
     private imageRepository: Repository<Image>,
   ) {}
 
-  async create(image: Image) {
-    const createdImages = await this.imageRepository.save(image)
-    return createdImages
+  async createByType(
+    type: 'DIARY' | 'RECIPE' | 'STEP',
+    entity: object,
+    urls: string[],
+  ): Promise<void> {
+    for(const url of urls) {
+      const newImage = new Image 
+      newImage['url'] = url
+      newImage[`${type.toLowerCase()}`] = entity
+      await this.imageRepository.save(newImage)
+    }
   }
 
   async deleteAllByType(type: 'diary' | 'recipe' | 'step', id: number) {

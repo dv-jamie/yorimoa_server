@@ -241,26 +241,10 @@ export class RecipesService {
     const findWriter = await this.userService.findOneById(reqId)
     const writer = findWriter.data
     const createdIngredients = await this.ingredientsService.createMany(ingredients)
-    const createdSteps = await this.stepsService.createMany(steps
-      )
-    const themes:Theme[] = []
-    const categories:Category[] = []
-    const diaries:Diary[] = []
-
-    for(const themeId of themeIds) {
-      const theme = await this.themesService.findOneById(themeId)
-      themes.push(theme)
-    }
-    for(const categoryId of categoryIds) {
-      const category = await this.categoriesService.findOneById(categoryId)
-      categories.push(category)
-    }
-    for(const diaryId of diaryIds) {
-      const findDiary = await this.diariesService.findOneById(diaryId)
-      const diary = findDiary.data
-      diaries.push(diary)
-    }
-
+    const createdSteps = await this.stepsService.createMany(steps)
+    const themes = await this.themesService.returnThemesById(themeIds)
+    const categories = await this.categoriesService.returnCategoriesById(categoryIds)
+    const diaries = await this.diariesService.returnDiariesById(diaryIds)
     const createdRecipe = await this.recipeRepository.save({
       ...recipeDto,
       themes,
@@ -271,12 +255,7 @@ export class RecipesService {
       writer
     })
 
-    for(const url of imageUrls) {
-      const newImage = new Image()
-      newImage.url = url
-      newImage.recipe = createdRecipe
-      await this.imagesService.create(newImage)
-    }
+    await this.imagesService.createByType('RECIPE', createdRecipe, imageUrls)
     
     return {
       status: 200,
@@ -313,5 +292,16 @@ export class RecipesService {
       status: 200,
       data: 'SUCCESS'
     };
+  }
+
+  async returnRecipesById(ids: number[]) {
+    const recipes:Recipe[] = []
+    for(const id of ids) {
+      const findRecipeById = await this.findOneById(id)
+      const recipe = findRecipeById.data
+      recipes.push(recipe)
+    }
+    
+    return recipes
   }
 }

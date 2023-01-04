@@ -21,4 +21,14 @@ export class CategoriesService {
     
     return category
   }
+
+  async returnCategoriesById(ids: number[]) {
+    const categories:Category[] = []
+    for(const id of ids) {
+      const category = await this.findOneById(id)
+      categories.push(category)
+    }
+    
+    return categories
+  }
 }

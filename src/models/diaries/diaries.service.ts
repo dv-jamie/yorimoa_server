@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/commo
 import { Repository } from 'typeorm';
 import { Image } from '../images/entities/image.entity';
 import { ImagesService } from '../images/images.service';
+import { Recipe } from '../recipes/entities/recipe.entity';
 import { RecipesService } from '../recipes/recipes.service';
 import { Theme } from '../themes/entities/theme.entity';
 import { ThemesService } from '../themes/themes.service';
@@ -154,23 +155,11 @@ export class DiariesService {
     reqId: number,
     createDiaryDto: CreateDiaryDto
   ):Promise<ResponseDto> {
+    const { content, themeIds, imageUrls, recipeIds } = createDiaryDto
     const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
-    const { content, themeIds, imageUrls, recipeIds } = createDiaryDto
-    const themes:Theme[] = []
-    const recipes:Theme[] = []
-
-    for(const themeId of themeIds) {
-      const theme = await this.themesService.findOneById(themeId)
-      themes.push(theme)
-    }
-
-    for(const recipeId of recipeIds) {
-      const findRecipe = await this.recipesService.findOneById(recipeId)
-      const recipe = findRecipe.data
-      recipes.push(recipe)
-    }
-
+    const themes = await this.themesService.returnThemesById(themeIds)
+    const recipes = await this.recipesService.returnRecipesById(recipeIds)
     const createdDiary = await this.diaryRepository.save({
       content,
       writer,
@@ -178,12 +167,7 @@ export class DiariesService {
       recipes
     })
 
-    for(const url of imageUrls) {
-      const newImage = new Image 
-      newImage.url = url
-      newImage.diary = createdDiary
-      await this.imagesService.create(newImage)
-    }
+    await this.imagesService.createByType('DIARY', createdDiary, imageUrls)
 
     return {
       status: 200,
@@ -221,12 +205,12 @@ export class DiariesService {
     if(imageUrls) {
       await this.imagesService.deleteAllByType('diary', id)
 
-      for(const url of imageUrls) {
-        const newImage = new Image 
-        newImage.url = url
-        newImage.diary = diary
-        await this.imagesService.create(newImage)
-      }
+      // for(const url of imageUrls) {
+      //   const newImage = new Image 
+      //   newImage.url = url
+      //   newImage.diary = diary
+      //   await this.imagesService.create(newImage)
+      // }
     }
     
     return {
@@ -246,5 +230,16 @@ export class DiariesService {
       status: 200,
       data: 'SUCCESS'
     };
+  }
+
+  async returnDiariesById(ids: number[]) {
+    const diaries:Diary[] = []
+    for(const id of ids) {
+      const findDiaryById = await this.findOneById(id)
+      const diary = findDiaryById.data
+      diaries.push(diary)
+    }
+    
+    return diaries
   }
 }

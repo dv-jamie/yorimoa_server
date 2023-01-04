@@ -21,4 +21,14 @@ export class ThemesService {
     
     return theme
   }
+
+  async returnThemesById(ids: number[]) {
+    const themes:Theme[] = []
+    for(const id of ids) {
+      const theme = await this.findOneById(id)
+      themes.push(theme)
+    }
+    
+    return themes
+  }
 }
