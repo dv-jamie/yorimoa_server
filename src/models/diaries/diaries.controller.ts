@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Quer
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { DiariesService } from './diaries.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
-import { DeleteDiaryDto } from './dto/delete-diaries.dto';
 import { GetDiariesDto } from './dto/get-diaries.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 
@@ -49,12 +48,8 @@ export class DiariesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':diaryId')
-  deleteOneWithRecipes(
-    @Param('diaryId') diaryId: number,
-    @Query() deleteDiaryDto: DeleteDiaryDto
-  ) {
-    const { recipeIds } = deleteDiaryDto
-    return this.diariesService.deleteOneWithRecipes(diaryId, recipeIds);
+  @Delete(':id')
+  deleteOne(@Param('id') id: number) {
+    return this.diariesService.deleteOne(id);
   }
 }

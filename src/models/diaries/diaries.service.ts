@@ -225,19 +225,12 @@ export class DiariesService {
     };
   }
 
-  async deleteOneWithRecipes(
-    diaryId: number,
-    recipeIds: number[]
-  ):Promise<ResponseDto> {
-    const diary = await this.diaryRepository.findOneBy({ id: diaryId })
+  async deleteOne(id: number):Promise<ResponseDto> {
+    const diary = await this.diaryRepository.findOneBy({ id })
 
     if(!diary) throw new NotFoundException('이미 삭제된 일기입니다.')
     
-    // if(recipeIds.length !== 0) {
-    //   await this.recipesService.deleteMany(recipeIds)
-    // }
-
-    await this.diaryRepository.delete(diaryId)
+    await this.diaryRepository.delete(id)
 
     return {
       status: 200,
