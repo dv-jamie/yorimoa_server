@@ -1,7 +1,8 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Image } from '../images/entities/image.entity';
 import { ImagesService } from '../images/images.service';
+import { RecipesService } from '../recipes/recipes.service';
 import { Theme } from '../themes/entities/theme.entity';
 import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
@@ -15,6 +16,8 @@ export class DiariesService {
   constructor(
     @Inject('DIARY_REPOSITORY')
     private diaryRepository: Repository<Diary>,
+    @Inject(forwardRef(() => RecipesService))
+    private recipesService: RecipesService,
     private usersService: UsersService,
     private imagesService: ImagesService,
     private themesService: ThemesService,
@@ -153,20 +156,27 @@ export class DiariesService {
   ):Promise<ResponseDto> {
     const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
-    const { content, themeIds, imageUrls, recipes } = createDiaryDto
-    
-    if(themeIds.length === 0 && imageUrls.length === 0) {
-      throw new BadRequestException('테마와 이미지는 필수값입니다.')
-    }
-
+    const { content, themeIds, imageUrls, recipeIds } = createDiaryDto
     const themes:Theme[] = []
-    for(const id of themeIds) {
-      const theme = await this.themesService.findOneById(id)
+    const recipes:Theme[] = []
+
+    for(const themeId of themeIds) {
+      const theme = await this.themesService.findOneById(themeId)
       themes.push(theme)
     }
 
-    const newDiary = { content, writer, themes, recipes }
-    const createdDiary = await this.diaryRepository.save(newDiary)
+    for(const recipeId of recipeIds) {
+      const findRecipe = await this.recipesService.findOneById(recipeId)
+      const recipe = findRecipe.data
+      recipes.push(recipe)
+    }
+
+    const createdDiary = await this.diaryRepository.save({
+      content,
+      writer,
+      themes,
+      recipes
+    })
 
     for(const url of imageUrls) {
       const newImage = new Image 
@@ -185,7 +195,7 @@ export class DiariesService {
     id: number,
     updateDiaryDto: UpdateDiaryDto
   ):Promise<ResponseDto> {
-    const { content, themeIds, imageUrls, recipes } = updateDiaryDto
+    const { content, themeIds, imageUrls, recipeIds } = updateDiaryDto
     const findDiary = await this.findOneById(id)
     const diary = findDiary.data
     
@@ -202,9 +212,9 @@ export class DiariesService {
       diary.themes = themes
     }
 
-    if(recipes) {
-      diary.recipes = recipes
-    }
+    // if(recipes) {
+    //   diary.recipes = recipes
+    // }
 
     await this.diaryRepository.save(diary)
 

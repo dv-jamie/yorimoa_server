@@ -4,11 +4,13 @@ import { Diary } from "../entities/diary.entity";
 
 export class CreateDiaryDto extends PickType(Diary, [
     'content',
-    'recipes',
 ] as const) {
     @IsNumber({}, { each: true })
     themeIds: number[]
 
     @IsString({ each: true })
     imageUrls: string[]
+
+    @IsNumber({}, { each: true })
+    recipeIds: number[]
 }
