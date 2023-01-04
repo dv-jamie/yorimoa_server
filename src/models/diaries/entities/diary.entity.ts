@@ -24,16 +24,15 @@ export class Diary extends BaseEntity {
     })
     writer: User
 
-    @IsObject({ each: true })
     @ManyToMany(() => Recipe, (recipe) => recipe.diaries)
     @JoinTable({ name: 'diary_recipe' })
     recipes: Recipe[]
 
     @ManyToMany(() => Theme, (theme) => theme.recipes)
-    @JoinTable({ name: 'theme_diary' })
+    @JoinTable({ name: 'diary_theme' })
     themes: Theme[]
 
     @ManyToMany(() => User, (user) => user.bookmarkDiaries)
-    @JoinTable({ name: 'bookmark_diary' })
+    @JoinTable({ name: 'diary_bookmark' })
     bookmarkUsers: User[]
 }
