@@ -1,9 +1,11 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Recipe } from "../../recipes/entities/recipe.entity";
 
 @Entity()
 export class Ingredient {
+    @IsOptional()
+    @IsNumber()
     @PrimaryGeneratedColumn()
     id: number;
 

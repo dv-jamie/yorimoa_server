@@ -6,6 +6,8 @@ import { Recipe } from "../../recipes/entities/recipe.entity";
 
 @Entity()
 export class Step {
+    @IsOptional()
+    @IsNumber()
     @PrimaryGeneratedColumn()
     id: number;
 

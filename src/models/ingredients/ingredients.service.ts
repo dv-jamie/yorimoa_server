@@ -9,9 +9,7 @@ export class IngredientsService {
     private ingredientRepository: Repository<Ingredient>,
   ) {}
 
-  async createMany(ingredients: Ingredient[]) {
-    const createdIngredients = await this.ingredientRepository.save(ingredients)
-    
-    return createdIngredients
+  async createOrUpdateMany(ingredients: Ingredient[]) {
+    return await this.ingredientRepository.save(ingredients)
   }
 }

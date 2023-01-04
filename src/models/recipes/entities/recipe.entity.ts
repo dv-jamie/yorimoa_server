@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
-import { IsNumber, IsString, Max, Min, ValidateNested } from "class-validator";
+import { IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";

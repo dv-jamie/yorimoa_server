@@ -9,9 +9,7 @@ export class StepsService {
     private stepRepository: Repository<Step>,
   ) {}
 
-  async createMany(steps: Step[]) {
-    const createdSteps = await this.stepRepository.save(steps)
-    
-    return createdSteps
+  async createOrUpdateMany(steps: Step[]) {
+    return await this.stepRepository.save(steps)
   }
 }

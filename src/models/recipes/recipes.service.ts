@@ -239,8 +239,8 @@ export class RecipesService {
     } = createRecipeDto
     const findWriter = await this.userService.findOneById(reqId)
     const writer = findWriter.data
-    const createdIngredients = await this.ingredientsService.createMany(ingredients)
-    const createdSteps = await this.stepsService.createMany(steps)
+    const newIngredients = await this.ingredientsService.createOrUpdateMany(ingredients)
+    const newSteps = await this.stepsService.createOrUpdateMany(steps)
     const themes = await this.themesService.returnThemesById(themeIds)
     const categories = await this.categoriesService.returnCategoriesById(categoryIds)
     const diaries = await this.diariesService.returnDiariesById(diaryIds)
@@ -248,8 +248,8 @@ export class RecipesService {
       ...recipeDto,
       themes,
       categories,
-      ingredients: createdIngredients,
-      steps: createdSteps,
+      ingredients: newIngredients,
+      steps: newSteps,
       diaries,
       writer
     })
@@ -258,7 +258,7 @@ export class RecipesService {
     
     return {
       status: 200,
-      data: createdRecipe
+      data: 'SUCCESS'
     };
   }
 
@@ -266,13 +266,45 @@ export class RecipesService {
     id: number,
     updateRecipeDto: UpdateRecipeDto
   ):Promise<ResponseDto> {
-    const result = await this.recipeRepository.update(id, {
-      ...updateRecipeDto
-    })
+    const {
+      ingredients,
+      steps,
+      themeIds,
+      categoryIds,
+      imageUrls,
+      diaryIds,
+      ...recipeDto
+    } = updateRecipeDto
+    
+    await this.recipeRepository.update(id, { ...recipeDto })
+
+    const findRecipe = await this.findOneById(id)
+    const recipe = findRecipe.data
+
+    if(ingredients) {
+      await this.ingredientsService.createOrUpdateMany(ingredients)
+    }
+    if(steps) {
+      await this.stepsService.createOrUpdateMany(steps)
+    }
+    if(themeIds) {
+      const themes = await this.themesService.returnThemesById(themeIds)
+      recipe.themes = themes
+    }
+    if(categoryIds) {
+      const categories = await this.categoriesService.returnCategoriesById(categoryIds)
+      recipe.categories = categories
+    }
+    if(diaryIds) {
+      const diaries = await this.diariesService.returnDiariesById(diaryIds)
+      recipe.diaries = diaries
+    }
+
+    await this.recipeRepository.save(recipe)
     
     return {
       status: 200,
-      data: result
+      data: 'SUCCESS'
     };
   }
 
