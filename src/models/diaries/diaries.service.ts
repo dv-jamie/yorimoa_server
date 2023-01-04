@@ -1,16 +1,16 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Image } from '../images/entities/image.entity';
+import { ImageType } from '../images/types/images.type';
 import { ImagesService } from '../images/images.service';
-import { Recipe } from '../recipes/entities/recipe.entity';
 import { RecipesService } from '../recipes/recipes.service';
-import { Theme } from '../themes/entities/theme.entity';
 import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
 import { GetDiariesDto } from './dto/get-diaries.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 import { Diary } from './entities/diary.entity';
+
+const imageType = ImageType.DIARY
 
 @Injectable()
 export class DiariesService {
@@ -167,7 +167,7 @@ export class DiariesService {
       recipes
     })
 
-    await this.imagesService.createByType('DIARY', createdDiary, imageUrls)
+    await this.imagesService.createByType(imageType, createdDiary, imageUrls)
 
     return {
       status: 200,
@@ -186,31 +186,20 @@ export class DiariesService {
     if(content) {
       diary.content = content
     }
-    
     if(themeIds) {
-      const themes:Theme[] = []
-      for(const id of themeIds) {
-        const theme = await this.themesService.findOneById(id)
-        themes.push(theme)
-      }
+      const themes = await this.themesService.returnThemesById(themeIds)
       diary.themes = themes
     }
-
-    // if(recipes) {
-    //   diary.recipes = recipes
-    // }
+    if(recipeIds) {
+      const recipes = await this.recipesService.returnRecipesById(recipeIds)
+      diary.recipes = recipes
+    }
 
     await this.diaryRepository.save(diary)
 
     if(imageUrls) {
-      await this.imagesService.deleteAllByType('diary', id)
-
-      // for(const url of imageUrls) {
-      //   const newImage = new Image 
-      //   newImage.url = url
-      //   newImage.diary = diary
-      //   await this.imagesService.create(newImage)
-      // }
+      await this.imagesService.deleteAllByType(imageType, id)
+      await this.imagesService.createByType(imageType, diary, imageUrls)
     }
     
     return {

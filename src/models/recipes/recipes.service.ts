@@ -1,11 +1,8 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CategoriesService } from '../categories/categories.service';
-import { Category } from '../categories/entities/category.entity';
 import { DiariesService } from '../diaries/diaries.service';
-import { Image } from '../images/entities/image.entity';
 import { ImagesService } from '../images/images.service';
-import { Theme } from '../themes/entities/theme.entity';
 import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -18,7 +15,9 @@ import { IngredientExceptGroup, IngredientGroup } from './interfaces/ingredient.
 import { StepExceptGroup, StepGroup } from './interfaces/step.interface';
 import { IngredientsService } from '../ingredients/ingredients.service';
 import { StepsService } from '../steps/steps.service';
-import { Diary } from '../diaries/entities/diary.entity';
+import { ImageType } from '../images/types/images.type';
+
+const imageType = ImageType.RECIPE
 
 @Injectable()
 export class RecipesService {
@@ -255,7 +254,7 @@ export class RecipesService {
       writer
     })
 
-    await this.imagesService.createByType('RECIPE', createdRecipe, imageUrls)
+    await this.imagesService.createByType(imageType, createdRecipe, imageUrls)
     
     return {
       status: 200,
