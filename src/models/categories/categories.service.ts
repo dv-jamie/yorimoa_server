@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 
@@ -6,11 +6,19 @@ import { Category } from './entities/category.entity';
 export class CategoriesService {
   constructor(
     @Inject('CATEGORY_REPOSITORY')
-    private themeRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async findAll() {
-    const themes = await this.themeRepository.find()
-    return themes;
+    const categories = await this.categoryRepository.find()
+    return categories;
+  }
+
+  async findOneById(id: number) {
+    const category = await this.categoryRepository.findOneBy({id})
+
+    if(!category) throw new NotFoundException('해당 카테고리가 존재하지 않습니다.')
+    
+    return category
   }
 }

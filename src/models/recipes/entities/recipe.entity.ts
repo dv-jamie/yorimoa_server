@@ -1,9 +1,10 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
-import { IsNumber, IsString, Max, Min } from "class-validator";
+import { IsNumber, IsString, Max, Min, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
-import { Ingredient } from "./ingredient.entity";
-import { Step } from "./step.entity";
+import { Ingredient } from "../../ingredients/entities/ingredient.entity";
+import { Step } from "../../steps/entities/step.entity";
 import { Diary } from "src/models/diaries/entities/diary.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
 import { Category } from "src/models/categories/entities/category.entity";
@@ -40,9 +41,13 @@ export class Recipe extends BaseEntity {
     @OneToMany(() => Image, (image) => image.recipe)
     images: Image[]
 
+    @ValidateNested({ each: true })
+    @Type(() => Ingredient)
     @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe)
     ingredients: Ingredient[]
 
+    @ValidateNested({ each: true })
+    @Type(() => Step)
     @OneToMany(() => Step, (step) => step.recipe)
     steps: Step[]
 

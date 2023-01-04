@@ -1,21 +1,38 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { CategoriesService } from '../categories/categories.service';
+import { Category } from '../categories/entities/category.entity';
+import { DiariesService } from '../diaries/diaries.service';
+import { Image } from '../images/entities/image.entity';
+import { ImagesService } from '../images/images.service';
+import { Theme } from '../themes/entities/theme.entity';
+import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { GetRecipesDto } from './dto/get-recipes.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
-import { Ingredient } from './entities/ingredient.entity';
+import { Ingredient } from '../ingredients/entities/ingredient.entity';
 import { Recipe } from './entities/recipe.entity';
-import { Step } from './entities/step.entity';
+import { Step } from '../steps/entities/step.entity';
 import { IngredientExceptGroup, IngredientGroup } from './interfaces/ingredient.interface';
 import { StepExceptGroup, StepGroup } from './interfaces/step.interface';
+import { IngredientsService } from '../ingredients/ingredients.service';
+import { StepsService } from '../steps/steps.service';
+import { Diary } from '../diaries/entities/diary.entity';
 
 @Injectable()
 export class RecipesService {
   constructor(
     @Inject('RECIPE_REPOSITORY')
     private recipeRepository: Repository<Recipe>,
+    @Inject(forwardRef(() => DiariesService))
+    private diariesService: DiariesService,
     private userService: UsersService,
+    private imagesService: ImagesService,
+    private themesService: ThemesService,
+    private categoriesService: CategoriesService,
+    private ingredientsService: IngredientsService,
+    private stepsService: StepsService,
   ) {}
 
   async findAll(getRecipesDto: GetRecipesDto):Promise<ResponseDto> {
@@ -212,12 +229,54 @@ export class RecipesService {
     reqId: number,
     createRecipeDto: CreateRecipeDto
   ):Promise<ResponseDto> {
+    const {
+      steps,
+      ingredients,
+      themeIds,
+      categoryIds,
+      imageUrls,
+      diaryIds,
+      ...recipeDto
+    } = createRecipeDto
     const findWriter = await this.userService.findOneById(reqId)
     const writer = findWriter.data
+    const createdIngredients = await this.ingredientsService.createMany(ingredients)
+    const createdSteps = await this.stepsService.createMany(steps
+      )
+    const themes:Theme[] = []
+    const categories:Category[] = []
+    const diaries:Diary[] = []
+
+    for(const themeId of themeIds) {
+      const theme = await this.themesService.findOneById(themeId)
+      themes.push(theme)
+    }
+    for(const categoryId of categoryIds) {
+      const category = await this.categoriesService.findOneById(categoryId)
+      categories.push(category)
+    }
+    for(const diaryId of diaryIds) {
+      const findDiary = await this.diariesService.findOneById(diaryId)
+      const diary = findDiary.data
+      diaries.push(diary)
+    }
+
     const createdRecipe = await this.recipeRepository.save({
-      ...createRecipeDto,
+      ...recipeDto,
+      themes,
+      categories,
+      ingredients: createdIngredients,
+      steps: createdSteps,
+      diaries,
       writer
     })
+
+    for(const url of imageUrls) {
+      const newImage = new Image()
+      newImage.url = url
+      newImage.recipe = createdRecipe
+      await this.imagesService.create(newImage)
+    }
     
     return {
       status: 200,

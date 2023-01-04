@@ -26,7 +26,7 @@ import { RepliesModule } from './models/replies/replies.module';
     RepliesModule,
     AuthModule,
     ThemesModule,
-    ImagesModule
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [

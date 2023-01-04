@@ -10,6 +10,7 @@ import { CategoriesService } from './categories.service';
   providers: [
     ...categoriesProviders,
     CategoriesService
-  ]
+  ],
+  exports: [CategoriesService]
 })
-export class ThemesModule {}
+export class CategoriesModule {}

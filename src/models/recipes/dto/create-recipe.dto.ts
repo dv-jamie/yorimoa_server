@@ -8,8 +8,8 @@ export class CreateRecipeDto extends PickType(Recipe, [
     'serving',
     'level',
     'summary',
-    'ingredients',
     'steps',
+    'ingredients'
 ] as const) {
     @IsNumber({}, { each: true })
     categoryIds: number[]
@@ -19,4 +19,7 @@ export class CreateRecipeDto extends PickType(Recipe, [
 
     @IsString({ each: true })
     imageUrls: string[]
+
+    @IsNumber({}, { each: true })
+    diaryIds: number[]
 }
