@@ -38,6 +38,8 @@ export class Recipe extends BaseEntity {
     @Column({ length: 100 })
     summary: string
 
+    @ValidateNested({ each: true })
+    @Type(() => Image)
     @OneToMany(() => Image, (image) => image.recipe)
     images: Image[]
 

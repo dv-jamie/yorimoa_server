@@ -15,9 +15,7 @@ import { IngredientExceptGroup, IngredientGroup } from './interfaces/ingredient.
 import { StepExceptGroup, StepGroup } from './interfaces/step.interface';
 import { IngredientsService } from '../ingredients/ingredients.service';
 import { StepsService } from '../steps/steps.service';
-import { ImageType } from '../images/types/images.type';
-
-const imageType = ImageType.RECIPE
+import { CreateImageByUrlsDto } from '../images/interfaces/images.interface';
 
 @Injectable()
 export class RecipesService {
@@ -229,18 +227,18 @@ export class RecipesService {
     createRecipeDto: CreateRecipeDto
   ):Promise<ResponseDto> {
     const {
+      images,
       steps,
       ingredients,
       themeIds,
       categoryIds,
-      imageUrls,
       diaryIds,
       ...recipeDto
     } = createRecipeDto
     const findWriter = await this.userService.findOneById(reqId)
     const writer = findWriter.data
-    const newIngredients = await this.ingredientsService.createOrUpdateMany(ingredients)
-    const newSteps = await this.stepsService.createOrUpdateMany(steps)
+    const createdIngredients = await this.ingredientsService.createOrUpdateMany(ingredients)
+    const createdSteps = await this.stepsService.createOrUpdateMany(steps)
     const themes = await this.themesService.returnThemesById(themeIds)
     const categories = await this.categoriesService.returnCategoriesById(categoryIds)
     const diaries = await this.diariesService.returnDiariesById(diaryIds)
@@ -248,13 +246,14 @@ export class RecipesService {
       ...recipeDto,
       themes,
       categories,
-      ingredients: newIngredients,
-      steps: newSteps,
+      ingredients: createdIngredients,
+      steps: createdSteps,
       diaries,
       writer
     })
-
-    await this.imagesService.createByType(imageType, createdRecipe, imageUrls)
+    const imageUrls = images.map(image => image.url)
+    const createImageByUrlsDto = { urls: imageUrls, recipe: createdRecipe }
+    await this.imagesService.createByUrls(createImageByUrlsDto)
     
     return {
       status: 200,
@@ -267,11 +266,11 @@ export class RecipesService {
     updateRecipeDto: UpdateRecipeDto
   ):Promise<ResponseDto> {
     const {
+      images,
       ingredients,
       steps,
       themeIds,
       categoryIds,
-      imageUrls,
       diaryIds,
       ...recipeDto
     } = updateRecipeDto
@@ -299,9 +298,28 @@ export class RecipesService {
       const diaries = await this.diariesService.returnDiariesById(diaryIds)
       recipe.diaries = diaries
     }
-
-    await this.recipeRepository.save(recipe)
     
+    await this.recipeRepository.save(recipe)
+
+    if(images) {
+      const urls:string[] = []
+      
+      for(const image of images) {
+        const { id, url } = image
+
+        if(id && url.length > 0) continue
+        if(id && url.length === 0) {
+          await this.imagesService.deleteById(id)
+          continue
+        }
+
+        urls.push(url)
+      }
+
+      const createImageByUrlsDto:CreateImageByUrlsDto = { urls, recipe }
+      await this.imagesService.createByUrls(createImageByUrlsDto)
+    }
+
     return {
       status: 200,
       data: 'SUCCESS'

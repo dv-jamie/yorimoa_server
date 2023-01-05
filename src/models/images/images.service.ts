@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Image } from './entities/image.entity';
-import { ImageType } from './types/images.type';
+import { CreateImageByUrlsDto } from './interfaces/images.interface';
 
 @Injectable()
 export class ImagesService {
@@ -10,27 +10,21 @@ export class ImagesService {
     private imageRepository: Repository<Image>,
   ) {}
 
-  async createByType(
-    type: ImageType,
-    entity: object,
-    urls: string[],
-  ): Promise<void> {
+  async createByUrls(createImageByUrlsDto: CreateImageByUrlsDto): Promise<void> {
+    const { urls, recipe, step, diary } = createImageByUrlsDto
+
     for(const url of urls) {
-      const newImage = new Image 
-      newImage['url'] = url
-      newImage[`${type}`] = entity
+      const newImage = new Image
+      newImage.url = url
+      if(recipe) newImage.recipe = recipe
+      if(step) newImage.step = step
+      if(diary) newImage.diary = diary
+
       await this.imageRepository.save(newImage)
     }
   }
 
-  async deleteAllByType(type: ImageType, id: number) {
-    const result = await this.imageRepository
-    .createQueryBuilder('image')
-    .delete()
-    .from(Image)
-    .where(`${type} = :id`, { id })
-    .execute()
-
-    return result
+  async deleteById(id: number | number[]): Promise<void> {
+    await this.imageRepository.delete(id)
   }
 }

@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { ImageType } from '../images/types/images.type';
 import { ImagesService } from '../images/images.service';
+import { CreateImageByUrlsDto } from '../images/interfaces/images.interface';
 import { RecipesService } from '../recipes/recipes.service';
 import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';
@@ -9,8 +9,6 @@ import { CreateDiaryDto } from './dto/create-diary.dto';
 import { GetDiariesDto } from './dto/get-diaries.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 import { Diary } from './entities/diary.entity';
-
-const imageType = ImageType.DIARY
 
 @Injectable()
 export class DiariesService {
@@ -155,7 +153,7 @@ export class DiariesService {
     reqId: number,
     createDiaryDto: CreateDiaryDto
   ):Promise<ResponseDto> {
-    const { content, themeIds, imageUrls, recipeIds } = createDiaryDto
+    const { content, themeIds, images, recipeIds } = createDiaryDto
     const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
     const themes = await this.themesService.returnThemesById(themeIds)
@@ -166,8 +164,9 @@ export class DiariesService {
       themes,
       recipes
     })
-
-    await this.imagesService.createByType(imageType, createdDiary, imageUrls)
+    const imageUrls = images.map(image => image.url)
+    const createImageByUrlsDto = { urls: imageUrls, diary: createdDiary}
+    await this.imagesService.createByUrls(createImageByUrlsDto)
 
     return {
       status: 200,
@@ -179,7 +178,7 @@ export class DiariesService {
     id: number,
     updateDiaryDto: UpdateDiaryDto
   ):Promise<ResponseDto> {
-    const { content, themeIds, imageUrls, recipeIds } = updateDiaryDto
+    const { content, themeIds, images, recipeIds } = updateDiaryDto
     const findDiary = await this.findOneById(id)
     const diary = findDiary.data
     
@@ -197,9 +196,23 @@ export class DiariesService {
 
     await this.diaryRepository.save(diary)
 
-    if(imageUrls) {
-      await this.imagesService.deleteAllByType(imageType, id)
-      await this.imagesService.createByType(imageType, diary, imageUrls)
+    if(images) {
+      const urls:string[] = []
+      
+      for(const image of images) {
+        const { id, url } = image
+
+        if(id && url.length > 0) continue
+        if(id && url.length === 0) {
+          await this.imagesService.deleteById(id)
+          continue
+        }
+
+        urls.push(url)
+      }
+
+      const createImageByUrlsDto:CreateImageByUrlsDto = { urls, diary }
+      await this.imagesService.createByUrls(createImageByUrlsDto)
     }
     
     return {

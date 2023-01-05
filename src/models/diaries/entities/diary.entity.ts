@@ -1,5 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
-import { IsString } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
+import { Type } from "class-transformer";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Recipe } from "src/models/recipes/entities/recipe.entity";
@@ -13,6 +14,8 @@ export class Diary extends BaseEntity {
     @Column('text')
     content: string
 
+    @ValidateNested({ each: true })
+    @Type(() => Image)
     @OneToMany(() => Image, (image) => image.diary)
     images: Image[]
 
