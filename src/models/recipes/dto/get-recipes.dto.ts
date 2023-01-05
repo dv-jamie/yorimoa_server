@@ -41,5 +41,5 @@ export class GetRecipesDto extends PaginationDto {
     keyword: string
 
     @IsString()
-    order: RecipeOrderType
+    orderBy: RecipeOrderType
 }

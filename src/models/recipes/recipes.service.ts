@@ -16,6 +16,9 @@ import { StepExceptGroup, StepGroup } from './interfaces/step.interface';
 import { IngredientsService } from '../ingredients/ingredients.service';
 import { StepsService } from '../steps/steps.service';
 import { CreateImageByUrlsDto } from '../images/dto/create-image.dto';
+import { Bookmark } from '../bookmarks/entities/bookmark.entity';
+import { RecipeOrderType } from './types/recipes.type';
+import { Reply } from '../replies/entities/reply.entity';
 
 @Injectable()
 export class RecipesService {
@@ -43,7 +46,7 @@ export class RecipesService {
       categoryIds,
       themeIds,
       keyword,
-      order,
+      orderBy,
       page,
       size
     } = getRecipesDto
@@ -64,17 +67,27 @@ export class RecipesService {
         'theme.id',
         'theme.name',
       ])
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(bookmark.id)')
+            .from(Bookmark, 'bookmark')
+            .where('bookmark.recipe = recipe.id')
+      }, 'bookmarksCount')
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(reply.id)')
+            .from(Reply, 'reply')
+            .where('reply.recipe = recipe.id')
+      }, 'repliesCount')
       .leftJoin('recipe.images', 'image')
       .leftJoin('recipe.categories', 'category')
       .leftJoin('recipe.themes', 'theme')
-      .leftJoinAndSelect('recipe.bookmarks', 'bookmark')
       .where(`recipe.serving BETWEEN :minServing AND :maxServing`, {
         minServing, maxServing
       })
       .andWhere(`recipe.level BETWEEN :minLevel AND :maxLevel`, {
         minLevel, maxLevel
       })
-      .orderBy(`recipe.${order}`, 'DESC')
       .take(size)
       .skip(page)
 
@@ -92,12 +105,17 @@ export class RecipesService {
     if(keyword) {
       query.andWhere('recipe.title LIKE :keyword', { keyword: `%${keyword}%` })
     }
+    if(orderBy !== RecipeOrderType.CREATED_AT) {
+      query.orderBy(orderBy, 'DESC')
+    }
 
-    const recipes = await query.getMany()
+    const [list, count] = await query
+      .addOrderBy('recipe.createdAt', 'DESC')
+      .getManyAndCount()
 
     return {
       status: 200,
-      data: recipes,
+      data: { list, count },
     };
   }
 

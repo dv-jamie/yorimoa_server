@@ -54,7 +54,7 @@ export class Recipe extends BaseEntity {
     @OneToMany(() => Step, (step) => step.recipe)
     steps: Step[]
 
-    @OneToMany(() => Reply, (reply) => reply)
+    @OneToMany(() => Reply, (reply) => reply.recipe)
     replies: Reply[]
 
     @OneToMany(() => Bookmark, (bookmark) => bookmark.recipe)
