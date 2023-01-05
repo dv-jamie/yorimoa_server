@@ -1,0 +1,1 @@
+export type RecipeOrderType = 'createdAt' | 'bookmarkCount' | 'replyCount'

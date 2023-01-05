@@ -15,7 +15,7 @@ import { IngredientExceptGroup, IngredientGroup } from './interfaces/ingredient.
 import { StepExceptGroup, StepGroup } from './interfaces/step.interface';
 import { IngredientsService } from '../ingredients/ingredients.service';
 import { StepsService } from '../steps/steps.service';
-import { CreateImageByUrlsDto } from '../images/interfaces/images.interface';
+import { CreateImageByUrlsDto } from '../images/dto/create-image.dto';
 
 @Injectable()
 export class RecipesService {
@@ -42,6 +42,8 @@ export class RecipesService {
       maxLevel,
       categoryIds,
       themeIds,
+      keyword,
+      order,
       page,
       size
     } = getRecipesDto
@@ -61,16 +63,18 @@ export class RecipesService {
         'category.name',
         'theme.id',
         'theme.name',
-      ]) 
+      ])
       .leftJoin('recipe.images', 'image')
       .leftJoin('recipe.categories', 'category')
       .leftJoin('recipe.themes', 'theme')
+      .leftJoinAndSelect('recipe.bookmarks', 'bookmark')
       .where(`recipe.serving BETWEEN :minServing AND :maxServing`, {
         minServing, maxServing
       })
       .andWhere(`recipe.level BETWEEN :minLevel AND :maxLevel`, {
         minLevel, maxLevel
       })
+      .orderBy(`recipe.${order}`, 'DESC')
       .take(size)
       .skip(page)
 
@@ -84,6 +88,9 @@ export class RecipesService {
     }
     if(categoryIds.length !== 0) {
       query.andWhere('theme.id IN (:categoryIds)', { categoryIds })
+    }
+    if(keyword) {
+      query.andWhere('recipe.title LIKE :keyword', { keyword: `%${keyword}%` })
     }
 
     const recipes = await query.getMany()

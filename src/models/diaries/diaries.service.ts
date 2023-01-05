@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ImagesService } from '../images/images.service';
-import { CreateImageByUrlsDto } from '../images/interfaces/images.interface';
+import { CreateImageByUrlsDto } from '../images/dto/create-image.dto';
 import { RecipesService } from '../recipes/recipes.service';
 import { ThemesService } from '../themes/themes.service';
 import { UsersService } from '../users/users.service';

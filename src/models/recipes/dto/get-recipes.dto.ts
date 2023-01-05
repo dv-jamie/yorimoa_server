@@ -1,6 +1,7 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { RecipeOrderType } from '../types/recipes.type';
 
 export class GetRecipesDto extends PaginationDto {
     @Type(() => Number)
@@ -29,9 +30,16 @@ export class GetRecipesDto extends PaginationDto {
 
     @Transform(({ value }) => JSON.parse(value))
     @IsNumber({}, { each: true })
-    themeIds: number[]
+    categoryIds: number[]
 
     @Transform(({ value }) => JSON.parse(value))
     @IsNumber({}, { each: true })
-    categoryIds: number[]
+    themeIds: number[]
+
+    @IsOptional()
+    @IsString()
+    keyword: string
+
+    @IsString()
+    order: RecipeOrderType
 }
