@@ -4,6 +4,7 @@ import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetRecipesDto } from './dto/get-recipes.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('recipes')
 export class RecipesController {
@@ -17,8 +18,11 @@ export class RecipesController {
   }
 
   @Get('user/:id')
-  findAllByUser(@Param('id') id: number) {
-    return this.recipesService.findAllByUser(id);
+  findAllByUser(
+    @Param('id') id: number,
+    @Query() paginationDto: PaginationDto
+  ) {
+    return this.recipesService.findAllByUser(id, paginationDto);
   }
 
   @Get(':id')

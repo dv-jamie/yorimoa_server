@@ -19,6 +19,7 @@ import { CreateImageByUrlsDto } from '../images/dto/create-image.dto';
 import { Bookmark } from '../bookmarks/entities/bookmark.entity';
 import { RecipeOrderType } from './types/recipes.type';
 import { Reply } from '../replies/entities/reply.entity';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class RecipesService {
@@ -27,7 +28,7 @@ export class RecipesService {
     private recipeRepository: Repository<Recipe>,
     @Inject(forwardRef(() => DiariesService))
     private diariesService: DiariesService,
-    private userService: UsersService,
+    private usersService: UsersService,
     private imagesService: ImagesService,
     private themesService: ThemesService,
     private categoriesService: CategoriesService,
@@ -119,7 +120,12 @@ export class RecipesService {
     };
   }
 
-  async findAllByUser(id: number):Promise<ResponseDto> {
+  async findAllByUser(
+    id: number,
+    paginationDto: PaginationDto
+  ):Promise<ResponseDto> {
+    await this.usersService.findOneById(id)
+    const { page, size } = paginationDto
     const recipes = await this.recipeRepository
       .createQueryBuilder('recipe')
       .select([
@@ -141,6 +147,8 @@ export class RecipesService {
       .leftJoin('recipe.categories', 'category')
       .leftJoin('recipe.themes', 'theme')
       .leftJoin('recipe.writer', 'writer')
+      .take(size)
+      .skip(page)
       .where('writer.id = :id', { id })
       .getMany()
 
@@ -260,7 +268,7 @@ export class RecipesService {
       diaryIds,
       ...recipeDto
     } = createRecipeDto
-    const findWriter = await this.userService.findOneById(reqId)
+    const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
     const createdIngredients = await this.ingredientsService.createOrUpdateMany(ingredients)
     const createdSteps = await this.stepsService.createOrUpdateMany(steps)

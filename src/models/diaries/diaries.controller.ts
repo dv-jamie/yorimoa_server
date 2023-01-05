@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Query } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { DiariesService } from './diaries.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
 import { GetDiariesDto } from './dto/get-diaries.dto';
@@ -19,9 +20,9 @@ export class DiariesController {
   @Get('user/:id')
   findAllByUser(
     @Param('id') id: number,
-    @Query() getDiariesDto: GetDiariesDto,
+    @Query() paginationDto: PaginationDto
   ) {
-    return this.diariesService.findAllByUser(id, getDiariesDto);
+    return this.diariesService.findAllByUser(id, paginationDto);
   }
 
   @Get(':id')

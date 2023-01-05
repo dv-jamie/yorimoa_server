@@ -9,6 +9,7 @@ import { CreateDiaryDto } from './dto/create-diary.dto';
 import { GetDiariesDto } from './dto/get-diaries.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 import { Diary } from './entities/diary.entity';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class DiariesService {
@@ -67,45 +68,23 @@ export class DiariesService {
 
   async findAllByUser(
     id: number,
-    getDiariesDto: GetDiariesDto
+    paginationDto: PaginationDto
   ):Promise<ResponseDto> {
     await this.usersService.findOneById(id)
-    const { themeIds, onlyRecipesLinked, page, size } = getDiariesDto
-    const query = this.diaryRepository
+    const { page, size } = paginationDto
+    const diaries = await this.diaryRepository
       .createQueryBuilder('diary')
       .select([
         'diary.id',
-        'diary.content',
-        'diary.createdAt',
-        'writer.id',
-        'writer.nick',
-        'writer.image',
-        'recipe.id',
-        'recipe.title',
-        'recipe.time',
-        'recipe.serving',
-        'recipe.level',
-        'theme.id',
-        'theme.name',
         'image.id',
         'image.url',
       ])
-      .leftJoin('diary.writer', 'writer')
-      .leftJoin('diary.themes', 'theme')
       .leftJoin('diary.images', 'image')
+      .leftJoin('diary.writer', 'writer')
+      .loadRelationCountAndMap('diary.recipesCount', 'diary.recipes')
+      .where('writer.id = :id', { id })
       .take(size)
       .skip(page)
-
-    onlyRecipesLinked
-    ? query.innerJoin('diary.recipes', 'recipe')
-    : query.leftJoin('diary.recipes', 'recipe')
-    
-    if(themeIds.length !== 0) {
-      query.where('theme.id IN (:themeIds)', { themeIds })
-    }
-
-    const diaries = await query
-      .andWhere('writer.id = :id', { id })
       .getMany()
 
     return {
