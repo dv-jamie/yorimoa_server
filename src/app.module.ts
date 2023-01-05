@@ -12,6 +12,7 @@ import { CatchException } from './exception/catchException';
 import { ThemesModule } from './models/themes/themes.module';
 import { ImagesModule } from './models/images/images.module';
 import { RepliesModule } from './models/replies/replies.module';
+import { BookmarksModule } from './models/bookmarks/bookmarks.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { RepliesModule } from './models/replies/replies.module';
     AuthModule,
     ThemesModule,
     ImagesModule,
+    BookmarksModule,
   ],
   controllers: [AppController],
   providers: [

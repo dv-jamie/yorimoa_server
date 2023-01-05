@@ -7,6 +7,7 @@ import { Recipe } from "src/models/recipes/entities/recipe.entity";
 import { Theme } from "src/models/themes/entities/theme.entity";
 import { Image } from "src/models/images/entities/image.entity";
 import { Reply } from "src/models/replies/entities/reply.entity";
+import { Bookmark } from "src/models/bookmarks/entities/bookmark.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
@@ -26,6 +27,11 @@ export class Diary extends BaseEntity {
         onDelete: 'CASCADE'
     })
     writer: User
+    
+    @ManyToOne(() => Bookmark, (bookmark) => bookmark.diary, {
+        onDelete: 'CASCADE'
+    })
+    bookmarks: Bookmark[]
 
     @ManyToMany(() => Recipe, (recipe) => recipe.diaries)
     @JoinTable({ name: 'diary_recipe' })
@@ -34,8 +40,4 @@ export class Diary extends BaseEntity {
     @ManyToMany(() => Theme, (theme) => theme.recipes)
     @JoinTable({ name: 'diary_theme' })
     themes: Theme[]
-
-    @ManyToMany(() => User, (user) => user.bookmarkDiaries)
-    @JoinTable({ name: 'diary_bookmark' })
-    bookmarkUsers: User[]
 }

@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
-import { IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
+import { IsNumber, IsString, Max, Min, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { BaseEntity } from "src/base-entity";
 import { User } from "src/models/users/entities/user.entity";
@@ -10,6 +10,7 @@ import { Theme } from "src/models/themes/entities/theme.entity";
 import { Category } from "src/models/categories/entities/category.entity";
 import { Image } from "src/models/images/entities/image.entity";
 import { Reply } from "src/models/replies/entities/reply.entity";
+import { Bookmark } from "src/models/bookmarks/entities/bookmark.entity";
 
 @Entity()
 export class Recipe extends BaseEntity {
@@ -56,6 +57,9 @@ export class Recipe extends BaseEntity {
     @OneToMany(() => Reply, (reply) => reply)
     replies: Reply[]
 
+    @OneToMany(() => Bookmark, (bookmark) => bookmark.recipe)
+    bookmarks: Bookmark[]
+
     @ManyToOne(() => User, (user) => user.recipes, {
         onDelete: 'CASCADE'
     })
@@ -71,8 +75,4 @@ export class Recipe extends BaseEntity {
     @ManyToMany(() => Theme, (theme) => theme.recipes)
     @JoinTable({ name: 'recipe_theme' })
     themes: Theme[]
-
-    @ManyToMany(() => User, (user) => user.bookmarkRecipes)
-    @JoinTable({ name: 'recipe_bookmark' })
-    bookmarkUsers: User[]
 }
