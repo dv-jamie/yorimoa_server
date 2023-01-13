@@ -10,6 +10,8 @@ import { GetDiariesDto } from './dto/get-diaries.dto';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 import { Diary } from './entities/diary.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { Bookmark } from '../bookmarks/entities/bookmark.entity';
+import { Reply } from '../replies/entities/reply.entity';
 
 @Injectable()
 export class DiariesService {
@@ -44,6 +46,18 @@ export class DiariesService {
         'image.id',
         'image.url',
       ])
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(bookmark.id)')
+            .from(Bookmark, 'bookmark')
+            .where('bookmark.diary = diary.id')
+      }, 'bookmarksCount')
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(reply.id)')
+            .from(Reply, 'reply')
+            .where('reply.diary = diary.id')
+      }, 'repliesCount')
       .leftJoin('diary.writer', 'writer')
       .leftJoin('diary.themes', 'theme')
       .leftJoin('diary.images', 'image')
@@ -59,11 +73,17 @@ export class DiariesService {
       query.where('theme.id IN (:themeIds)', { themeIds })
     }
 
-    const diaries = await query.getMany()
+    const diaries = await query.getRawAndEntities()
+
+    for (const entity of diaries.entities) {
+      const raw = diaries.raw.find((raw) => raw.diary_id === entity.id);
+      entity['bookmarksCount'] = Number(raw.bookmarksCount)
+      entity['repliesCount'] = Number(raw.repliesCount)
+    }
 
     return {
       status: 200,
-      data: diaries,
+      data: diaries.entities,
     };
   }
 
@@ -80,17 +100,35 @@ export class DiariesService {
         'image.id',
         'image.url',
       ])
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(bookmark.id)')
+            .from(Bookmark, 'bookmark')
+            .where('bookmark.diary = diary.id')
+      }, 'bookmarksCount')
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(reply.id)')
+            .from(Reply, 'reply')
+            .where('reply.diary = diary.id')
+      }, 'repliesCount')
       .leftJoin('diary.images', 'image')
       .leftJoin('diary.writer', 'writer')
       .loadRelationCountAndMap('diary.recipesCount', 'diary.recipes')
       .where('writer.id = :id', { id })
       .take(size)
       .skip(page)
-      .getMany()
+      .getRawAndEntities()
+
+      for (const entity of diaries.entities) {
+        const raw = diaries.raw.find((raw) => raw.diary_id === entity.id);
+        entity['bookmarksCount'] = Number(raw.bookmarksCount)
+        entity['repliesCount'] = Number(raw.repliesCount)
+      }
 
     return {
       status: 200,
-      data: diaries
+      data: diaries.entities
     };
   }
 
@@ -114,18 +152,36 @@ export class DiariesService {
         'recipe.serving',
         'recipe.level',
       ])
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(bookmark.id)')
+            .from(Bookmark, 'bookmark')
+            .where('bookmark.diary = diary.id')
+      }, 'bookmarksCount')
+      .addSelect(subQuery => {
+        return subQuery
+            .select('COUNT(reply.id)')
+            .from(Reply, 'reply')
+            .where('reply.diary = diary.id')
+      }, 'repliesCount')
       .leftJoin('diary.writer', 'writer')
       .leftJoin('diary.themes', 'theme')
       .leftJoin('diary.images', 'image')
       .leftJoin('diary.recipes', 'recipe')
       .where('diary.id = :id', { id })
-      .getOne()
+      .getRawAndEntities()
+      
+    for (const entity of diary.entities) {
+      const raw = diary.raw.find((raw) => raw.diary_id === entity.id);
+      entity['bookmarksCount'] = Number(raw.bookmarksCount)
+      entity['repliesCount'] = Number(raw.repliesCount)
+    }
 
     if(!diary) throw new NotFoundException('해당 일기를 찾을 수 없습니다.')
 
     return {
       status: 200,
-      data: diary
+      data: diary.entities[0]
     };
   }
 
