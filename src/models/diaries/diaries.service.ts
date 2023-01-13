@@ -47,6 +47,7 @@ export class DiariesService {
       .leftJoin('diary.writer', 'writer')
       .leftJoin('diary.themes', 'theme')
       .leftJoin('diary.images', 'image')
+      .loadRelationCountAndMap('diary.recipesCount', 'diary.recipes')
       .take(size)
       .skip(page)
 
