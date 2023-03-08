@@ -4,6 +4,7 @@ import { CreateRefrigeratorDto } from './dto/create-refrigerator.dto';
 import { UpdateRefrigeratorDto } from './dto/update-refrigerator.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetRefrigeratorsDto } from './dto/get-refrigerators.dto';
+import { RefrigeratorTagType } from './types/refrigerators.type';
 
 @UseGuards(JwtAuthGuard)
 @Controller('refrigerators')
@@ -41,5 +42,13 @@ export class RefrigeraotrsController {
     @Body('ids') ids: number[]
   ) {
     return this.refrigeratorsService.deleteMany(ids);
+  }
+  
+  @Patch(':id/tag/:type')
+  toggleTag(
+    @Param('id') id: number,
+    @Param('type') type: RefrigeratorTagType
+  ) {
+    return this.refrigeratorsService.toggleTag(id, type);
   }
 }

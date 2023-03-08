@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CategoriesService } from '../categories/categories.service';
 import { UsersService } from '../users/users.service';
@@ -6,6 +6,7 @@ import { CreateRefrigeratorDto } from './dto/create-refrigerator.dto';
 import { GetRefrigeratorsDto } from './dto/get-refrigerators.dto';
 import { UpdateRefrigeratorDto } from './dto/update-refrigerator.dto';
 import { Refrigerator } from './entities/refrigerator.entity';
+import { RefrigeratorTagType } from './types/refrigerators.type';
 
 @Injectable()
 export class RefrigeratorsService {
@@ -130,6 +131,37 @@ export class RefrigeratorsService {
     return {
       status: 200,
       data: results
+    };
+  }
+
+  async toggleTag(id: number, type: RefrigeratorTagType) {
+    let result: UpdateResult
+    let findTag: Refrigerator
+    let newTag: boolean
+    switch(type) {
+      case RefrigeratorTagType.EAT :
+        findTag = await this.refrigeratorRepository.findOne({
+          select: ['eatTag'],
+          where: { id }
+        })
+        newTag = findTag.eatTag ? false : true
+        result = await this.refrigeratorRepository.update(id, { eatTag: newTag })
+        break
+      case RefrigeratorTagType.BUY :
+        findTag = await this.refrigeratorRepository.findOne({
+          select: ['buyTag'],
+          where: { id }
+        })
+        newTag = findTag.buyTag ? false : true
+        result = await this.refrigeratorRepository.update(id, { buyTag: newTag })
+        break
+      default :
+        throw new BadRequestException('잘못된 요청입니다.')
+    }
+
+    return {
+      status: 200,
+      data: result
     };
   }
 }
