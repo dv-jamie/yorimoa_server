@@ -13,6 +13,7 @@ import { ThemesModule } from './models/themes/themes.module';
 import { ImagesModule } from './models/images/images.module';
 import { RepliesModule } from './models/replies/replies.module';
 import { BookmarksModule } from './models/bookmarks/bookmarks.module';
+import { RefrigeratorsModule } from './models/refrigerators/refrigerators.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { BookmarksModule } from './models/bookmarks/bookmarks.module';
     ThemesModule,
     ImagesModule,
     BookmarksModule,
+    RefrigeratorsModule,
   ],
   controllers: [AppController],
   providers: [
