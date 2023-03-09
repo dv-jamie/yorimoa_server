@@ -10,11 +10,4 @@ export class CategoriesController {
   findAll() {
     return this.categoriesService.findAll();
   }
-
-  @Get('type/:type')
-  findAllByType(
-    @Param('type') type: CategoriesType
-  ) {
-    return this.categoriesService.findAllByType(type);
-  }
 }

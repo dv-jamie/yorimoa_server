@@ -15,15 +15,6 @@ export class CategoriesService {
     return categories;
   }
 
-  async findAllByType(type: CategoriesType):Promise<ResponseDto> {
-    const categories = await this.categoryRepository.findBy({ type })
-
-    return {
-      status: 200,
-      data: categories,
-    }
-  }
-
   async findOneById(id: number) {
     const category = await this.categoryRepository.findOneBy({id})
 
