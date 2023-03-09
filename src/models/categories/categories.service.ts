@@ -1,6 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
+import { CategoriesType } from './types/categories.type';
 
 @Injectable()
 export class CategoriesService {
@@ -12,6 +13,15 @@ export class CategoriesService {
   async findAll() {
     const categories = await this.categoryRepository.find()
     return categories;
+  }
+
+  async findAllByType(type: CategoriesType):Promise<ResponseDto> {
+    const categories = await this.categoryRepository.findBy({ type })
+
+    return {
+      status: 200,
+      data: categories,
+    }
   }
 
   async findOneById(id: number) {
