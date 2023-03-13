@@ -7,19 +7,19 @@ import { Bookmark } from "src/models/bookmarks/entities/bookmark.entity";
 
 @Entity()
 export class User extends BaseEntity {
-    @Column({ length: 10 })
+    @Column('varchar', { length: 10 })
     loginType: 'KAKAO'
 
     @Column('bigint')
     uid: number
     
-    @Column({ length: 15 })
+    @Column({ length: 15, nullable: true })
     nick: string
 
-    @Column()
+    @Column({ nullable: true })
     image: string
     
-    @Column({ length: 30 })
+    @Column({ length: 30, nullable: true })
     introduction: string
 
     @OneToMany(() => Recipe, (recipe) => recipe.writer)
