@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
-import { IsBoolean, IsDateString, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsNumber, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 import { booleanMapper } from "src/common/dto/boolean-mapper";
 import { BaseEntity } from "src/base-entity";
@@ -26,12 +26,14 @@ export class Refrigerator extends BaseEntity {
     @Column({ default: false })
     buyTag: boolean
 
+    @IsNumber()
+    @ManyToOne(() => Category, (category) => category.refrigerators, {
+        onDelete: 'CASCADE'
+    })
+    category: Category
+
     @ManyToOne(() => User, (user) => user.recipes, {
         onDelete: 'CASCADE'
     })
     writer: User
-
-    @ManyToMany(() => Category, (category) => category.refrigerators)
-    @JoinTable({ name: 'refrigerator_category' })
-    categories: Category[]
 }

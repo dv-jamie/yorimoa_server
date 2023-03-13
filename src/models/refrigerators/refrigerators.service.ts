@@ -47,9 +47,8 @@ export class RefrigeratorsService {
         'refrigerator.eatTag',
         'refrigerator.buyTag',
         'category.id',
-        'category.name',
       ])
-      .leftJoin('refrigerator.categories', 'category')
+      .leftJoin('refrigerator.category', 'category')
       .leftJoin('refrigerator.writer', 'writer')
       .where('writer.id = :userId', { userId })
       .take(size)
@@ -78,14 +77,14 @@ export class RefrigeratorsService {
     reqId: number,
     createRefrigeratorDto: CreateRefrigeratorDto
   ):Promise<ResponseDto> {
-    const { name, boughtAt, categoryIds } = createRefrigeratorDto
+    const { name, boughtAt, categoryId } = createRefrigeratorDto
     const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
-    const categories = await this.categoriesService.returnCategoriesById(categoryIds)
+    const category = await this.categoriesService.findOneById(categoryId)
     const createdRefrigerator = await this.refrigeratorRepository.save({
       name,
       boughtAt,
-      categories,
+      category,
       writer,
     })
 
@@ -98,20 +97,8 @@ export class RefrigeratorsService {
   async updateMany(updateRefrigeratorDtos: UpdateRefrigeratorDto[]) {
     const results: UpdateResult[] = []
     for(let refrigeratorDto of updateRefrigeratorDtos) {
-      const { id, categoryIds, ...updateDto } = refrigeratorDto
-      
-      await this.refrigeratorRepository.update(id, { ...updateDto })
-      
-      const findRefrigerator = await this.findOneById(id)
-      const refrigerator = findRefrigerator.data
-      
-      if(categoryIds) {
-        const categories = await this.categoriesService.returnCategoriesById(categoryIds)
-        refrigerator.categories = categories
-      }
-
-      const result = await this.refrigeratorRepository.save(refrigerator)
-      
+      const { id, ...updateDto } = refrigeratorDto
+      const result = await this.refrigeratorRepository.update(id, { ...updateDto })
       results.push(result)
     }
 

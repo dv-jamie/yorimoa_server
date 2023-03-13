@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Query } from '@nestjs/common';
 import { RefrigeratorsService } from './refrigerators.service';
 import { CreateRefrigeratorDto } from './dto/create-refrigerator.dto';
 import { UpdateRefrigeratorDto } from './dto/update-refrigerator.dto';
