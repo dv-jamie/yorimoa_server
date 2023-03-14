@@ -17,7 +17,7 @@ export class RefrigeratorsService {
     private categoriesService: CategoriesService,
   ) {}
 
-  async findOneById(id: number):Promise<ResponseDto> {
+  async findOneById(id: number): Promise<ResponseDto> {
     const refrigerator = await this.refrigeratorRepository.findOneBy({ id })
     
     if(!refrigerator) throw new NotFoundException('해당 재료를 찾을 수 없습니다.')
@@ -31,7 +31,7 @@ export class RefrigeratorsService {
   async findAllByUser(
     userId: number,
     getRefrigeratorsDto: GetRefrigeratorsDto
-  ):Promise<ResponseDto> {
+  ): Promise<ResponseDto> {
     const {
       categoryId,
       keyword,
@@ -76,7 +76,7 @@ export class RefrigeratorsService {
   async create(
     reqId: number,
     createRefrigeratorDto: CreateRefrigeratorDto
-  ):Promise<ResponseDto> {
+  ): Promise<ResponseDto> {
     const { name, boughtAt, categoryId } = createRefrigeratorDto
     const findWriter = await this.usersService.findOneById(reqId)
     const writer = findWriter.data
@@ -94,7 +94,9 @@ export class RefrigeratorsService {
     };
   }
 
-  async updateMany(updateRefrigeratorDtos: UpdateRefrigeratorDto[]) {
+  async updateMany(
+    updateRefrigeratorDtos: UpdateRefrigeratorDto[]
+  ): Promise<ResponseDto> {
     const results: UpdateResult[] = []
     for(let refrigeratorDto of updateRefrigeratorDtos) {
       const { id, ...updateDto } = refrigeratorDto
@@ -108,7 +110,7 @@ export class RefrigeratorsService {
     };
   }
 
-  async deleteMany(ids: number[]) {
+  async deleteMany(ids: number[]): Promise<ResponseDto> {
     const results: DeleteResult[] = []
     for(let id of ids) {
       const result = await this.refrigeratorRepository.delete(id)
@@ -121,7 +123,23 @@ export class RefrigeratorsService {
     };
   }
 
-  async toggleTag(id: number, type: RefrigeratorTagType) {
+  async deleteAllByUser(id: number): Promise<ResponseDto> {
+    const result = await this.refrigeratorRepository
+      .createQueryBuilder('refrigerator')
+      .leftJoin('refrigerator.writer', 'writer')
+      .where('writer.id = :id', { id })
+      .execute()
+
+    return {
+      status: 200,
+      data: result
+    };
+  }
+
+  async toggleTag(
+    id: number,
+    type: RefrigeratorTagType
+  ): Promise<ResponseDto> {
     let result: UpdateResult
     let findTag: Refrigerator
     let newTag: boolean
