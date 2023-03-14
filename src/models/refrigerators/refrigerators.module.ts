@@ -16,6 +16,7 @@ import { CategoriesModule } from '../categories/categories.module';
   providers: [
     ...refrigeratorsProviders,
     RefrigeratorsService
-  ]
+  ],
+  exports: [RefrigeratorsService]
 })
 export class RefrigeratorsModule {}
