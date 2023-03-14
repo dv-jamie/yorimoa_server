@@ -14,6 +14,8 @@ import { ImagesModule } from './models/images/images.module';
 import { RepliesModule } from './models/replies/replies.module';
 import { BookmarksModule } from './models/bookmarks/bookmarks.module';
 import { RefrigeratorsModule } from './models/refrigerators/refrigerators.module';
+import { ResetController } from './models/reset/reset.controller';
+import { ResetService } from './models/reset/reset.service';
 
 @Module({
   imports: [
@@ -32,9 +34,10 @@ import { RefrigeratorsModule } from './models/refrigerators/refrigerators.module
     BookmarksModule,
     RefrigeratorsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ResetController],
   providers: [
     AppService,
+    ResetService,
     {
       provide: APP_FILTER,
       useClass: CatchException,

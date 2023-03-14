@@ -5,8 +5,8 @@ import { ResetService } from './reset.service';
 export class ResetController {
   constructor(private readonly resetService: ResetService) {}
 
-  @Delete(':id')
-  remove(@Req() req) {
+  @Delete()
+  resetData(@Req() req) {
     return this.resetService.resetData(req.user.id);
   }
 }

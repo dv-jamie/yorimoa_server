@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { RefrigeratorsService } from '../refrigerators/refrigerators.service';
-import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ResetService {
   constructor(
-    private userService: UsersService,
     private refrigeratorsService: RefrigeratorsService,
   ) {}
 
