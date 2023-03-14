@@ -5,7 +5,6 @@ import { Refrigerator } from "../entities/refrigerator.entity";
 export class CreateRefrigeratorDto extends PickType(Refrigerator, [
     'name',
     'boughtAt',
-    'category'
 ] as const) {
     @IsNumber()
     categoryId: number
