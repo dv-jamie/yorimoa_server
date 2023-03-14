@@ -126,8 +126,9 @@ export class RefrigeratorsService {
   async deleteAllByUser(id: number): Promise<ResponseDto> {
     const result = await this.refrigeratorRepository
       .createQueryBuilder('refrigerator')
-      .leftJoin('refrigerator.writer', 'writer')
-      .where('writer.id = :id', { id })
+      .delete()
+      .from(Refrigerator)
+      .where('writer = :id', { id })
       .execute()
 
     return {

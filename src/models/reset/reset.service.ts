@@ -9,6 +9,7 @@ export class ResetService {
 
   async resetData(userId: number): Promise<ResponseDto> {
     const result = await this.refrigeratorsService.deleteAllByUser(userId)
+    
     return {
       status: 200,
       data: result
