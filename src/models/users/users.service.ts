@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { createRandomNick } from 'src/common/util';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -37,7 +38,8 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto):Promise<ResponseDto> {
-    const createdUser = await this.userRepository.save(createUserDto)
+    const nick = createRandomNick()
+    const createdUser = await this.userRepository.save({ ...createUserDto, nick })
     return {
       status: 200,
       data: createdUser,
