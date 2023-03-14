@@ -33,7 +33,7 @@ export class RefrigeratorsService {
     getRefrigeratorsDto: GetRefrigeratorsDto
   ):Promise<ResponseDto> {
     const {
-      categoryIds,
+      categoryId,
       keyword,
       page,
       size
@@ -54,8 +54,8 @@ export class RefrigeratorsService {
       .take(size)
       .skip(page)
 
-    if(categoryIds.length !== 0) {
-      query.andWhere('category.id IN (:categoryIds)', { categoryIds })
+    if(categoryId) {
+      query.andWhere('category.id = :categoryId', { categoryId })
     }
     if(keyword) {
       query.andWhere('refrigerator.name LIKE :keyword', { keyword: `%${keyword}%` })
