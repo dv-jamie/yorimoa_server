@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/models/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { formUrlEncoded } from 'src/common/util';
 import { User } from 'src/models/users/entities/user.entity';
 import { CreateUserDto } from 'src/models/users/dto/create-user.dto';
 
@@ -46,7 +47,7 @@ export class AuthService {
     return userInfo
   }
 
-  async login(uid: number): Promise<any> {
+  async login(uid: number): Promise<ResponseDto> {
     const createUserDto: CreateUserDto = {
       loginType: 'KAKAO',
       uid
@@ -63,6 +64,30 @@ export class AuthService {
     return {
       status: 200,
       data: { jwtToken, userId: user.id },
+    }
+  }
+
+  async unlinkKakao(userId: number): Promise<ResponseDto> {
+    const KAKAO_UNLINK_URL = 'https://kapi.kakao.com/v1/user/unlink'
+    const { data: user } = await this.usersService.findOneById(userId)
+    const requestBody = formUrlEncoded({
+      target_id_type: "user_id",
+      target_id: user.uid
+    }) 
+    const response = await axios.post(KAKAO_UNLINK_URL, requestBody, {
+      headers: {
+        Authorization: 'KakaoAK ' + process.env.KAKAO_ADMIN_KEY,
+      }
+    })
+
+    // 서비스 내 탈퇴 처리
+    if(response.status === 200) {
+      await this.usersService.removeOne(userId)
+    }
+
+    return {
+      status: 200,
+      data: response.data,
     }
   }
 }

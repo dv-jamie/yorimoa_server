@@ -17,6 +17,7 @@ export class UsersService {
       .createQueryBuilder('user')
       .select([
         'user.id',
+        'user.uid',
         'user.nick',
         'user.image',
         'user.introduction'
