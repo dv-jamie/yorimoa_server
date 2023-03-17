@@ -94,32 +94,26 @@ export class RefrigeratorsService {
     };
   }
 
-  async updateMany(
-    updateRefrigeratorDtos: UpdateRefrigeratorDto[]
+  async updateOne(
+    id: number,
+    updateRefrigeratorDto: UpdateRefrigeratorDto
   ): Promise<ResponseDto> {
-    const results: UpdateResult[] = []
-    for(let refrigeratorDto of updateRefrigeratorDtos) {
-      const { id, ...updateDto } = refrigeratorDto
-      const result = await this.refrigeratorRepository.update(id, { ...updateDto })
-      results.push(result)
-    }
+    const { categoryId, ...dto } = updateRefrigeratorDto
+    const category = await this.categoriesService.findOneById(categoryId)
+    const result = await this.refrigeratorRepository.update(id, { category, ...dto })
 
     return {
       status: 200,
-      data: results
+      data: result
     };
   }
 
-  async deleteMany(ids: number[]): Promise<ResponseDto> {
-    const results: DeleteResult[] = []
-    for(let id of ids) {
-      const result = await this.refrigeratorRepository.delete(id)
-      results.push(result)
-    }
+  async deleteOne(id: number): Promise<ResponseDto> {
+    const result = await this.refrigeratorRepository.delete(id)
 
     return {
       status: 200,
-      data: results
+      data: result
     };
   }
 

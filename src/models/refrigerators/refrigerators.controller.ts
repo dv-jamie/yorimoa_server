@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete, Param, UseGuards, Req, Query } from '@nestjs/common';
 import { RefrigeratorsService } from './refrigerators.service';
 import { CreateRefrigeratorDto } from './dto/create-refrigerator.dto';
 import { UpdateRefrigeratorDto } from './dto/update-refrigerator.dto';
@@ -30,18 +30,19 @@ export class RefrigeraotrsController {
     return this.refrigeratorsService.create(req.user.id, createRefrigeratorDto);
   }
 
-  @Patch()
-  updateMany(
-    @Body() updateRefrigeratorDtos: UpdateRefrigeratorDto[]
+  @Patch(':id')
+  updateOne(
+    @Param('id') id: number,
+    @Body() updateRefrigeratorDto: UpdateRefrigeratorDto
   ) {
-    return this.refrigeratorsService.updateMany(updateRefrigeratorDtos);
+    return this.refrigeratorsService.updateOne(id, updateRefrigeratorDto);
   }
 
-  @Post('delete')
-  deleteMany(
-    @Body('ids') ids: number[]
+  @Delete(':id')
+  deleteOne(
+    @Param('id') id: number
   ) {
-    return this.refrigeratorsService.deleteMany(ids);
+    return this.refrigeratorsService.deleteOne(id);
   }
   
   @Patch(':id/tag/:type')
