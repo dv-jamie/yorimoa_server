@@ -35,8 +35,6 @@ export class RefrigeratorsService {
     const {
       categoryId,
       keyword,
-      page,
-      size
     } = getRefrigeratorsDto
     const query = this.refrigeratorRepository
       .createQueryBuilder('refrigerator')
@@ -51,8 +49,6 @@ export class RefrigeratorsService {
       .leftJoin('refrigerator.category', 'category')
       .leftJoin('refrigerator.writer', 'writer')
       .where('writer.id = :userId', { userId })
-      .take(size)
-      .skip(page)
 
     if(categoryId) {
       query.andWhere('category.id = :categoryId', { categoryId })
