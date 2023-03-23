@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { CategoriesService } from '../categories/categories.service';
 import { UsersService } from '../users/users.service';
 import { CreateRefrigeratorDto } from './dto/create-refrigerator.dto';

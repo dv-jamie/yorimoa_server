@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { IsBoolean, IsDateString, IsNumber, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 import { booleanMapper } from "src/common/dto/boolean-mapper";
