@@ -22,8 +22,8 @@ import { ResetService } from './models/reset/reset.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // envFilePath: ['.env.development.local', '.env.development'],
-      envFilePath: process.env.NODE_ENV === 'production'
+      envFilePath:
+        process.env.NODE_ENV === 'production'
           ? '.env.production'
           : '.env.development.local',
       validationSchema: Joi.object({
@@ -51,7 +51,7 @@ import { ResetService } from './models/reset/reset.service';
     {
       provide: APP_FILTER,
       useClass: CatchException,
-    }
+    },
   ],
 })
 export class AppModule {}
